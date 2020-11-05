@@ -67,7 +67,7 @@ echo "--------------------------------------------------------------------------
 echo "[Synth] CDK Project"
 echo "------------------------------------------------------------------------------"
 cd $source_dir/cdk
-npm install 
+npm install
 cdk synth --output=$staging_dist_dir
 cd $staging_dist_dir
 rm tree.json manifest.json cdk.out
@@ -75,7 +75,7 @@ rm tree.json manifest.json cdk.out
 echo "------------------------------------------------------------------------------"
 echo "Run Cdk Helper and update template placeholders"
 echo "------------------------------------------------------------------------------"
-mv VodFoundation.template.json $template_dist_dir/video-on-demand-foundation.template
+mv VodFoundation.template.json $template_dist_dir/video-on-demand-on-aws-foundation.template
 
 node $template_dir/cdk-solution-helper/index
 
@@ -119,4 +119,3 @@ echo "[Cleanup] Remove temporary files"
 echo "------------------------------------------------------------------------------"
 rm -rf $staging_dist_dir
 rm -f $template_dist_dir/*.template-e
-
