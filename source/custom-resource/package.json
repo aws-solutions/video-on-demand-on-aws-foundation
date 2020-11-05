@@ -1,0 +1,25 @@
+{
+  "name": "vod-custom-resource",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=12"
+  },
+  "description": "cfn custom resources for video on demand",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --collect-coverage lib/**/*.spec.js"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.609.0",
+    "jest": "^26.4.2"
+  },
+  "private": true,
+  "author": {
+    "name": "aws-solutions-builder"
+  },
+  "license": "Apache-2.0"
+}
