@@ -297,7 +297,7 @@ export class VodFoundation extends cdk.Stack {
                 enabled: true,
                 eventPattern: {
                     "source": ["aws.mediaconvert"],
-                    "detail": {
+                    "detail-type": {
                         "userMetadata": {
                             "StackName": [
                                 cdk.Aws.STACK_NAME
