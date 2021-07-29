@@ -58,6 +58,11 @@ rm -rf $staging_dist_dir
 mkdir -p $staging_dist_dir
 
 echo "------------------------------------------------------------------------------"
+echo "[Init] Update local CDK CLI for building"
+echo "------------------------------------------------------------------------------"
+npm install -g aws-cdk@latest
+
+echo "------------------------------------------------------------------------------"
 echo "[Init] Install dependencies for the cdk-solution-helper"
 echo "------------------------------------------------------------------------------"
 cd $template_dir/cdk-solution-helper

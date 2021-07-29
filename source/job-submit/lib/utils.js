@@ -118,6 +118,7 @@ const updateJobSettings = async (job, inputPath, outputPath, metadata, role) => 
 const createJob = async (job, endpoint) => {
     const mediaconvert = new AWS.MediaConvert({
         endpoint: endpoint,
+        customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     try {
         await mediaconvert.createJob(job).promise();

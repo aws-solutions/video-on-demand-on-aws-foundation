@@ -76,7 +76,8 @@ const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
     console.log('Processing MediaConvert outputs');
     const buildUrl = (originalValue) => originalValue.slice(5).split('/').splice(1).join('/');
     const mediaconvert = new AWS.MediaConvert({
-        endpoint: endpoint
+        endpoint: endpoint,
+        customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     let jobDetails = {};
     

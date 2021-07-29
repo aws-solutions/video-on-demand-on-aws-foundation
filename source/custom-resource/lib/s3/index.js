@@ -2,6 +2,9 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
+// Example identifier. 'AwsSolution/SO0052/v1.0.0'
+
+const options = { customUserAgent: process.env.SOLUTION_IDENTIFIER };
 const AWS = require('aws-sdk');
 const fs = require('fs');
 
@@ -13,7 +16,7 @@ const fs = require('fs');
 const setDefaults = async (bucket) => {
     console.log('creating files')
     try {
-        const s3 = new AWS.S3();
+        const s3 = new AWS.S3(options);
         await s3.putObject({
             Body: fs.readFileSync('./lib/s3/job-settings.json', 'utf8'),
             Bucket: bucket,
@@ -37,7 +40,7 @@ const setDefaults = async (bucket) => {
 const putNotification = async (bucket,lambdaArn) => {
 
     try {
-        const s3 = new AWS.S3();
+        const s3 = new AWS.S3(options);
 
         await s3.putBucketNotificationConfiguration({
             Bucket: bucket,
@@ -99,6 +102,234 @@ const putNotification = async (bucket,lambdaArn) => {
                                 FilterRules: [{
                                     Name: 'suffix',
                                     Value: '.m2ts'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.wmv'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.mxf'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.mkv'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.m3u8'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.mpeg'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.webm'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.h264'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MPG'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MP4'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.M4V'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MOV'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.M2TS'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.WMV'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MXF'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MKV'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.M3U8'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.MPEG'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.WEBM'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
+                                    Value: '.H264'
                                 }]
                             }
                         }

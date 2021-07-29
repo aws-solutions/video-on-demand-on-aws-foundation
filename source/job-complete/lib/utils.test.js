@@ -690,6 +690,104 @@ const metricsData = {
     },
     StatusUpdateInterval: "SECONDS_60",
     Priority: 0,
+    OutputGroupDetails: [
+        {
+            "OutputDetails": [
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 1080,
+                        "WidthInPx": 1920
+                    }
+                }
+            ]
+        },
+        {
+            "OutputDetails": [
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 270,
+                        "WidthInPx": 480
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 360,
+                        "WidthInPx": 640
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 540,
+                        "WidthInPx": 960
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 720,
+                        "WidthInPx": 1280
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 1080,
+                        "WidthInPx": 1920
+                    }
+                }
+            ]
+        },
+        {
+            "OutputDetails": [
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 270,
+                        "WidthInPx": 480
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 360,
+                        "WidthInPx": 640
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 540,
+                        "WidthInPx": 960
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 720,
+                        "WidthInPx": 1280
+                    }
+                },
+                {
+                    "DurationInMs": 10000,
+                    "VideoDetails": {
+                        "HeightInPx": 1080,
+                        "WidthInPx": 1920
+                    }
+                },
+                {
+                    "DurationInMs": 9984
+                }
+            ]
+        }
+      ],
+      Timing: {
+        "FinishTime": "2021-04-12T23:34:40.000Z",
+        "SubmitTime": "2021-04-12T23:34:26.000Z"
+      }
   },
   InputDetails: {
     uri: "uri",

@@ -18,7 +18,7 @@ export class VodFoundation extends cdk.Stack {
         /**
          * CloudFormation Template Descrption
          */
-        this.templateOptions.description = '(SO0146) v1.0.0: Video on Demand on AWS Foundation Solution Implementation';
+        this.templateOptions.description = '(SO0146) v1.1.0: Video on Demand on AWS Foundation Solution Implementation';
         /**
          * Mapping for sending anonymous metrics to AWS Solution Builders API
          */
@@ -150,6 +150,9 @@ export class VodFoundation extends cdk.Stack {
             runtime: lambda.Runtime.NODEJS_12_X,
             handler: 'index.handler',
             description: 'CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint',
+            environment: {
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
+            },
             code: lambda.Code.fromAsset('../custom-resource'),
             timeout: cdk.Duration.seconds(30),
 			initialPolicy: [
@@ -170,6 +173,12 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
+                    },{
+                        id: 'W89',
+                        reason: 'AWS Lambda does not require VPC for this solution.'
+                    },{
+                        id: 'W92',
+                        reason: 'ReservedConcurrentExecutions not required'
                 }]
             }
         };
@@ -197,6 +206,7 @@ export class VodFoundation extends cdk.Stack {
                 DESTINATION_BUCKET: destination.bucketName,
                 SOLUTION_ID: 'SO0146',
                 STACKNAME: cdk.Aws.STACK_NAME,
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
                 /** SNS_TOPIC_ARN: added by the solution construct below */
             },
             initialPolicy: [
@@ -227,7 +237,13 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
-                }]
+                },{
+                    id: 'W89',
+                    reason: 'AWS Lambda does not require VPC for this solution.'
+                },{
+                    id: 'W92',
+                    reason: 'ReservedConcurrentExecutions not required'
+            }]
             }
         };
         /**
@@ -253,8 +269,9 @@ export class VodFoundation extends cdk.Stack {
                 STACKNAME: cdk.Aws.STACK_NAME,
                 METRICS:  cdk.Fn.findInMap('Send', 'AnonymousUsage', 'Data'),
                 SOLUTION_ID:'SO0146',
-                VERSION:'1.0.0',
-                UUID:customResourceEndpoint.getAttString('UUID')
+                VERSION:'1.1.0',
+                UUID:customResourceEndpoint.getAttString('UUID'),
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
             },
             initialPolicy: [
                 new iam.PolicyStatement({
@@ -273,7 +290,13 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
-                }]
+                },{
+                    id: 'W89',
+                    reason: 'AWS Lambda does not require VPC for this solution.'
+                },{
+                    id: 'W92',
+                    reason: 'ReservedConcurrentExecutions not required'
+            }]
             }
         };
         /**
