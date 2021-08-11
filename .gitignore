@@ -16,3 +16,7 @@
 **/.vscode/settings.json
 **/.DS_Store
 **/.vscode
+
+# intellij
+**/.idea
+

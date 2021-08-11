@@ -1,18 +1,29 @@
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
+import {HttpMethods} from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import { HttpMethods } from '@aws-cdk/aws-s3';
 /**
  * AWS Solution Constructs: https://docs.aws.amazon.com/solutions/latest/constructs/
  */
-import { CloudFrontToS3 } from '@aws-solutions-constructs/aws-cloudfront-s3';
-import { EventsRuleToLambda } from '@aws-solutions-constructs/aws-events-rule-lambda';
-import { LambdaToSns } from '@aws-solutions-constructs/aws-lambda-sns';
+import {CloudFrontToS3} from '@aws-solutions-constructs/aws-cloudfront-s3';
+import * as Cloudfront from '@aws-cdk/aws-cloudfront';
+import {ViewerProtocolPolicy} from '@aws-cdk/aws-cloudfront';
+import {EventsRuleToLambda} from '@aws-solutions-constructs/aws-events-rule-lambda';
+import {LambdaToSns} from '@aws-solutions-constructs/aws-lambda-sns';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 
 export class VodFoundation extends cdk.Stack {
+
+    private readonly snsTopic: LambdaToSns
+
+    public getSnsTopic(): LambdaToSns
+    {
+        return this.snsTopic
+    }
+
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         /**
@@ -25,7 +36,7 @@ export class VodFoundation extends cdk.Stack {
         new cdk.CfnMapping(this, 'Send', {
             mapping: {
                 AnonymousUsage: {
-                    Data: 'Yes'
+                    Data: 'No'
                 }
             }
         });
@@ -79,50 +90,32 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
-        /**
-         * Destination S3 bucket to host the mediaconvert outputs
-        */
-        const destination = new s3.Bucket(this, 'Destination', {
-            serverAccessLogsBucket: logsBucket,
-            serverAccessLogsPrefix: 'destination-bucket-logs/',
-            encryption: s3.BucketEncryption.S3_MANAGED,
-            publicReadAccess: false,
-            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-            cors: [
-                {
-                  maxAge: 3000,
-                  allowedOrigins: ['*'],
-                  allowedHeaders: ['*'],
-                  allowedMethods: [HttpMethods.GET]
-                },
-              ],
-        });
-        /**
-         * Solutions construct to create Cloudfrotnt with an s3 bucket as the origin
-         * https://docs.aws.amazon.com/solutions/latest/constructs/aws-cloudfront-s3.html
-         * insertHttpSecurityHeaders is set to false as this requires the deployment to be in us-east-1
-        */
-        const cloudFront = new CloudFrontToS3(this, 'CloudFront', {
-            existingBucketObj: destination,
-            insertHttpSecurityHeaders: false,
-            cloudFrontDistributionProps: {
-                comment:`${cdk.Aws.STACK_NAME} Video on Demand Foundation`,
-                defaultCacheBehavior: {
-                    allowedMethods: [ 'GET', 'HEAD','OPTIONS' ],
-                    Compress: false,
-                    forwardedValues: {
-                      queryString: false,
-                      headers: [ 'Origin', 'Access-Control-Request-Method','Access-Control-Request-Headers' ],
-                      cookies: { forward: 'none' }
-                    },
-                    viewerProtocolPolicy: 'allow-all'
-                },
-                loggingConfig: {
-                    bucket: logsBucket,
-                    prefix: 'cloudfront-logs'
+
+        const destination = s3.Bucket.fromBucketName(this, "destination", "claus-destination")
+
+        const op = new Cloudfront.OriginRequestPolicy(this, "originRequestPolicy", {
+            queryStringBehavior: Cloudfront.OriginRequestQueryStringBehavior.none(),
+            cookieBehavior: Cloudfront.OriginRequestCookieBehavior.none(),
+            headerBehavior: Cloudfront.OriginRequestHeaderBehavior.allowList('Origin', 'Access-Control-Allow-Origin', 'Access-Control-Request-Method','Access-Control-Request-Headers')
+        })
+
+        const cloudFront = new Cloudfront.Distribution(this, "CloudFront", {
+            defaultBehavior: {
+                origin: new origins.S3Origin(destination),
+                allowedMethods: Cloudfront.AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+                compress: false,
+                viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+                smoothStreaming: true,
+                originRequestPolicy: {
+                    originRequestPolicyId: op.originRequestPolicyId
                 }
             }
-        });
+            ,
+            comment: `${cdk.Aws.STACK_NAME} Video on Demand Foundation`,
+            logBucket: logsBucket,
+            logFilePrefix: 'cloudfront-logs'
+        })
+
         /**
          * MediaConvert Service Role to grant Mediaconvert Access to the source and Destination Bucket,
          * API invoke * is also required for the services.
@@ -262,7 +255,7 @@ export class VodFoundation extends cdk.Stack {
             description: 'Triggered by Cloudwatch Events,processes completed MediaConvert jobs.',
             environment: {
                 MEDIACONVERT_ENDPOINT: customResourceEndpoint.getAttString('Endpoint'),
-                CLOUDFRONT_DOMAIN: cloudFront.cloudFrontWebDistribution.distributionDomainName,
+                CLOUDFRONT_DOMAIN: cloudFront.distributionDomainName,
                 /** SNS_TOPIC_ARN: added by the solution construct below */
                 SOURCE_BUCKET: source.bucketName,
                 JOB_MANIFEST: 'jobs-manifest.json',
@@ -300,7 +293,7 @@ export class VodFoundation extends cdk.Stack {
             }
         };
         /**
-         * Custom resource to configure the source S3 bucket; upload default job-settings file and 
+         * Custom resource to configure the source S3 bucket; upload default job-settings file and
          * enabble event notifications to trigger the job-submit lambda function
          */
         new cdk.CustomResource(this, 'S3Config', {
@@ -366,7 +359,7 @@ export class VodFoundation extends cdk.Stack {
             exportName: `${ cdk.Aws.STACK_NAME}-DestinationBucket`
         });
         new cdk.CfnOutput(this, 'CloudFrontDomain', {
-            value: cloudFront.cloudFrontWebDistribution.distributionDomainName,
+            value: cloudFront.distributionDomainName,
             description: 'CloudFront Domain Name',
             exportName: `${ cdk.Aws.STACK_NAME}-CloudFrontDomain`
         });
@@ -375,5 +368,7 @@ export class VodFoundation extends cdk.Stack {
             description: 'SNS Topic used to capture the VOD workflow outputs including errors',
             exportName: `${ cdk.Aws.STACK_NAME}-SnsTopic`
         });
+
+        this.snsTopic = snsTopic
     }
 }
