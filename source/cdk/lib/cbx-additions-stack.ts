@@ -11,7 +11,7 @@ import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
 import {LayerVersion} from "@aws-cdk/aws-lambda";
 
 export class CbxAddition extends cdk.Stack {
-    constructor(streamHost, apiHost: string, mediaConvertEndpoint: string, encodingComplete: LambdaToSns, branch: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(streamHost: string, apiHost: string, mediaConvertEndpoint: string, encodingComplete: LambdaToSns, branch: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
         const subtitleConversionLambda = new lambda.Function(this, `subtitle-conversion-${branch}`, {
