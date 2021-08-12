@@ -21,11 +21,12 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.110.0",
-    "@aws-cdk/aws-s3": "1.110.0",
     "@aws-cdk/aws-iam": "1.110.0",
     "@aws-cdk/aws-lambda": "1.110.0",
+    "@aws-cdk/aws-mediaconvert": "^1.110.0",
+    "@aws-cdk/aws-s3": "1.110.0",
     "@aws-cdk/aws-sns-subscriptions": "1.110.0",
+    "@aws-cdk/core": "1.110.0",
     "@aws-solutions-constructs/aws-cloudfront-s3": "1.110.0",
     "@aws-solutions-constructs/aws-events-rule-lambda": "1.110.0",
     "@aws-solutions-constructs/aws-lambda-sns": "1.110.0",

@@ -18,13 +18,19 @@ import * as origins from '@aws-cdk/aws-cloudfront-origins';
 export class VodFoundation extends cdk.Stack {
 
     private readonly snsTopic: LambdaToSns
+    private readonly mediaConvertEndpoint: string
 
     public getSnsTopic(): LambdaToSns
     {
         return this.snsTopic
     }
 
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    public getMediaConvertEndpoint(): string
+    {
+        return this.mediaConvertEndpoint
+    }
+
+    constructor(destinationBucketName: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         /**
          * CloudFormation Template Descrption
@@ -40,14 +46,7 @@ export class VodFoundation extends cdk.Stack {
                 }
             }
         });
-        /**
-         * Cfn Parameters
-         */
-        const adminEmail = new cdk.CfnParameter(this, "emailAddress", {
-            type: "String",
-            description: "The admin email address to receive SNS notifications for job status.",
-            allowedPattern: "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
-        });
+
         /**
          * Logs bucket for S3 and CloudFront
         */
@@ -91,7 +90,7 @@ export class VodFoundation extends cdk.Stack {
             }
         };
 
-        const destination = s3.Bucket.fromBucketName(this, "destination", "claus-destination")
+        const destination = s3.Bucket.fromBucketName(this, "destination", destinationBucketName)
 
         const op = new Cloudfront.OriginRequestPolicy(this, "originRequestPolicy", {
             queryStringBehavior: Cloudfront.OriginRequestQueryStringBehavior.none(),
@@ -342,10 +341,6 @@ export class VodFoundation extends cdk.Stack {
             existingTopicObj: snsTopic.snsTopic
         });
         /**
-         * Subscribe the admin email address to the SNS topic created but the construct.
-         */
-        snsTopic.snsTopic.addSubscription(new subs.EmailSubscription(adminEmail.valueAsString))
-        /**
          * Stack Outputs
         */
         new cdk.CfnOutput(this, 'SourceBucket', {
@@ -370,5 +365,6 @@ export class VodFoundation extends cdk.Stack {
         });
 
         this.snsTopic = snsTopic
+        this.mediaConvertEndpoint = customResourceEndpoint.getAttString('Endpoint')
     }
 }

@@ -11,8 +11,12 @@ if (branch == undefined || !(['master', 'development'].includes(branch))) {
 }
 console.log(`building for "${branch}"`)
 
+const DESTINATION_BUCKET_NAME = "claus-destination"
+const API_HOST = ""
+const STREAM_HOST = ""
+
 const app = new cdk.App();
 
-const base = new VodFoundation(app, `streaming-defaults-${branch}`);
+const base = new VodFoundation(DESTINATION_BUCKET_NAME, app, `streaming-defaults-${branch}`);
 
-new CbxAddition(base.getSnsTopic(), branch, app, `streaming-custom-${branch}`)
+new CbxAddition(STREAM_HOST, API_HOST, base.getMediaConvertEndpoint(), base.getSnsTopic(), branch, app, `streaming-custom-${branch}`)

@@ -1,0 +1,24 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:eu-west-1:233403125868:streaming-defaults-development-NotificationSnsTopicB941FD22-14KBBCYBEFDJ1:c4c99047-4c46-416e-95b2-d41155a45379",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "a468b289-45b4-556f-a809-eb064b6d6893",
+        "TopicArn": "arn:aws:sns:eu-west-1:233403125868:streaming-defaults-development-NotificationSnsTopicB941FD22-14KBBCYBEFDJ1",
+        "Subject": "streaming-defaults-development: Job ERROR id:1628769428055-y9is6f",
+        "Message": "{\n  'Details': 'https://console.aws.amazon.com/mediaconvert/home?region=eu-west-1#/jobs/summary/1628769428055-y9is6f',\n  'ErrorMsg': {\n    'version': '0',\n    'id': '33bf3b06-649b-ebdf-ef1f-4789c1f3a231',\n    'detail-type': 'MediaConvert Job State Change',\n    'source': 'aws.mediaconvert',\n    'account': '233403125868',\n    'time': '2021-08-12T11:57:11Z',\n    'region': 'eu-west-1',\n    'resources': [\n      'arn:aws:mediaconvert:eu-west-1:233403125868:jobs/1628769428055-y9is6f'\n    ],\n    'detail': {\n      'timestamp': 1628769431773,\n      'accountId': '233403125868',\n      'queue': 'arn:aws:mediaconvert:eu-west-1:233403125868:queues/Default',\n      'jobId': '1628769428055-y9is6f',\n      'status': 'ERROR',\n      'errorCode': 1030,\n      'errorMessage': 'Video codec [png] is not a supported input video codec',\n      'userMetadata': {\n        'Guid': 'e4012450-beb7-4da6-a952-f084c4f8a690',\n        'StackName': 'streaming-defaults-development',\n        'SolutionId': 'SO0146'\n      }\n    }\n  }\n}",
+        "Timestamp": "2021-08-12T11:57:13.794Z",
+        "SignatureVersion": "1",
+        "Signature": "uByYE55Dym2N4jEytRE6/pSyuG9WVHZMJcxTbGGmr4xKbe7rn/k1Q8/ob9DnWqK7nWmlOS50ZkyeqTKAMhbxI1i6ncuF0qnSg1IkvOO2zk/U4sNYB8TkGAvbQUtFnadyKh0+GapiNBipm8hTI/8ozd4J9cMKowMsE2C8r1oSoEvlYBIAhukwmeeoGuFwt3nSKSnN0S/gw/FWZIqfwM4bpcvHr1jg3MBKHoLw+SNPdUBXf/dFPe5tns4nG3e7M5I9wrwIfIR6Bp4XBMVYsrFB+qs/nddzDf43TYjqBdKXRQLkCcUm4M0NrVnx/qB68YpIbEu7639o+u6PSzBqSpGOWQ==",
+        "SigningCertUrl": "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+        "UnsubscribeUrl": "https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:233403125868:streaming-defaults-development-NotificationSnsTopicB941FD22-14KBBCYBEFDJ1:c4c99047-4c46-416e-95b2-d41155a45379",
+        "MessageAttributes": {
+          
+        }
+      }
+    }
+  ]
+}
