@@ -1,17 +1,17 @@
 import * as cdk from "@aws-cdk/core";
+import {RemovalPolicy} from "@aws-cdk/core";
 import * as lambda from '@aws-cdk/aws-lambda';
+import {LayerVersion} from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam'
+import * as sqs from '@aws-cdk/aws-sqs';
 import {RetentionDays} from "@aws-cdk/aws-logs";
-import * as mediaconvert from '@aws-cdk/aws-mediaconvert';
-import * as subs from '@aws-cdk/aws-sns'
-import {ApiKey, Deployment, LambdaIntegration, RestApi, SecurityPolicy} from "@aws-cdk/aws-apigateway"
-import * as ssm from '@aws-cdk/aws-ssm';
+import {LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
 import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
-import {LayerVersion} from "@aws-cdk/aws-lambda";
+import {IBucket} from "@aws-cdk/aws-s3";
 
 export class CbxAddition extends cdk.Stack {
-    constructor(streamHost: string, apiHost: string, mediaConvertEndpoint: string, encodingComplete: LambdaToSns, branch: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(srcBucketName: string, sourceBucket: IBucket, streamHost: string, apiHost: string, mediaConvertEndpoint: string, encodingComplete: LambdaToSns, branch: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
         const subtitleConversionLambda = new lambda.Function(this, `subtitle-conversion-${branch}`, {
@@ -39,15 +39,74 @@ export class CbxAddition extends cdk.Stack {
             environment: {
                 'HOST': apiHost,
                 'MEDIA_CONVERT_ENDPOINT': mediaConvertEndpoint,
-                'PATH_SUCCESS': "",
-                'PATH_FAILURE': "",
+                'PATH_SUCCESS': "/media/stream/success",
+                'PATH_FAILURE': "/media/stream/failure",
                 'STREAM_HOST': streamHost,
             },
-            logRetention: RetentionDays.ONE_MONTH
+            logRetention: RetentionDays.ONE_MONTH,
+            initialPolicy: [
+                new iam.PolicyStatement({
+                    actions: ["mediaconvert:GetJob"],
+                    resources: [`arn:${cdk.Aws.PARTITION}:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
+                }),
+                new iam.PolicyStatement({
+                    actions: [
+                        "ssm:GetParameterHistory",
+                        "ssm:GetParametersByPath",
+                        "ssm:GetParameters",
+                        "ssm:GetParameter",
+                    ],
+                    resources: ["arn:aws:ssm:*:*:parameter/*"]
+                }),
+                new iam.PolicyStatement({
+                    actions: [
+                        "kms:GetPublicKey",
+                        "kms:Decrypt"
+                    ],
+                    resources: [`arn:aws:kms:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:key/c1a912e0-e464-49a1-a18d-2aa66453bb65`]
+                })
+            ]
         })
 
-        const eventSource = new lambdaEventSources.SnsEventSource(encodingComplete.snsTopic);
-        videoReadyLambda.addEventSource(eventSource);
+        const videoIngestLambda = new lambda.Function(this, `video-ingest-${branch}`, {
+            runtime: lambda.Runtime.PYTHON_3_8,
+            code: lambda.Code.fromAsset('../ingest'),
+            handler: 'lambda_function.lambda_handler',
+            environment: {
+                'SRC_BUCKET_NAME': srcBucketName,
+                'DEST_BUCKET_NAME': sourceBucket.bucketName
+            },
+            logRetention: RetentionDays.ONE_MONTH,
+
+            initialPolicy: [
+                new iam.PolicyStatement({
+                    actions: ["s3:GetObject"],
+                    resources: [`arn:aws:s3:::${srcBucketName}/*`]
+                })
+            ],
+        })
+
+        sourceBucket.grantWrite(videoIngestLambda)
+
+        const ingestDeadQueue = new sqs.Queue(this, 'dead-ingest-queue-${branch}', {
+            queueName: `dead-ingest-queue-${branch}`,
+            removalPolicy: RemovalPolicy.RETAIN
+        });
+
+        const ingestQueue = new sqs.Queue(this, 'video-ingest-queue-${branch}', {
+            queueName: `video-ingest-queue-${branch}`,
+            deadLetterQueue: {
+                queue: ingestDeadQueue,
+                maxReceiveCount: 2
+            },
+            removalPolicy: RemovalPolicy.RETAIN
+        });
+
+        const ingestEventSource = new lambdaEventSources.SqsEventSource(ingestQueue);
+        videoIngestLambda.addEventSource(ingestEventSource);
+
+        const videoReadyEventSource = new lambdaEventSources.SnsEventSource(encodingComplete.snsTopic);
+        videoReadyLambda.addEventSource(videoReadyEventSource);
 
         videoReadyLambda.addToRolePolicy(new iam.PolicyStatement({
             actions: ["mediaconvert:GetJob"],
@@ -55,6 +114,7 @@ export class CbxAddition extends cdk.Stack {
         }))
 
         //TODO: SSM param store access!
+
         const subtitlePublicDocsLambda = new lambda.Function(this, `subtitle-docs-${branch}`, {
             runtime: lambda.Runtime.PYTHON_3_7,
             code: lambda.Code.fromAsset('../subtitles/docs'),

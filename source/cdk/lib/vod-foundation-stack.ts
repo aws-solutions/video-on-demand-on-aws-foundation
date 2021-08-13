@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
-import {HttpMethods} from '@aws-cdk/aws-s3';
+import {HttpMethods, IBucket} from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
@@ -19,6 +19,7 @@ export class VodFoundation extends cdk.Stack {
 
     private readonly snsTopic: LambdaToSns
     private readonly mediaConvertEndpoint: string
+    private readonly sourceBucket: IBucket
 
     public getSnsTopic(): LambdaToSns
     {
@@ -28,6 +29,11 @@ export class VodFoundation extends cdk.Stack {
     public getMediaConvertEndpoint(): string
     {
         return this.mediaConvertEndpoint
+    }
+
+    public getSourceBucket(): IBucket
+    {
+        return this.sourceBucket
     }
 
     constructor(destinationBucketName: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -80,6 +86,8 @@ export class VodFoundation extends cdk.Stack {
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         });
+        this.sourceBucket = source
+
         const cfnSource = source.node.findChild('Resource') as s3.CfnBucket;
         cfnSource.cfnOptions.metadata = {
             cfn_nag: {

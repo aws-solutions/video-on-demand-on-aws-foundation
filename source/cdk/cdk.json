@@ -5,10 +5,15 @@
     "aws-cdk:enableDiffNoFail": "true",
     "@aws-cdk/core:stackRelativeExports": "true",
     "development": {
-      "bucketName": "my-dev-bucket"
+      "destination_bucket_name": "claus-destination",
+      "api_host": "https://claus-api.cbx.xyz",
+      "stream_host": "https://dpv7mez7ofol6.cloudfront.net",
+      "src_bucket_name": "colourbox.plovpenning.file.test"
     },
     "prod": {
-      "bucketName": "my-prod-bucket"
+      "destination_bucket_name": "",
+      "api_host": "",
+      "stream_host": ""
     }
   }
 }

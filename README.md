@@ -1,5 +1,9 @@
 # Custom Colourbox related things
 
+### Issues
+Issue: Updating configs used as env var isn't propagated unless the construct has a property updated directly
+
+Work-around: Add/update a fubar env var to force it to propagate
 ### Bootstrapping
 cdk bootstrapping
 pipeline(?)

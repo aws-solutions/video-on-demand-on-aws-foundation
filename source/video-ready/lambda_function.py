@@ -20,7 +20,7 @@ def get_media_identifier(uri):
     return uri.split(sep="/")[-1]
 
 
-def get_file_identifier_from_job(job_id):
+def get_file_source_name_from_job_id(job_id):
     client = boto3.client('mediaconvert', endpoint_url=MEDIA_CONVERT_ENDPOINT)
     document = client.get_job(
         Id=job_id
@@ -51,7 +51,7 @@ def send_success(stream_url, file_identifier):
 def on_failure(event):
     msg = json.loads(event['Records'][0]['Sns']['Message'])
     send_failure(
-        get_file_identifier_from_job(msg['ErrorMsg']['detail']['jobId']),
+        get_file_source_name_from_job_id(msg['ErrorMsg']['detail']['jobId']),
         msg['ErrorMsg']['detail']['errorMessage'],
         msg['ErrorMsg']['detail']['errorCode'],
     )
