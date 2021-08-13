@@ -6,16 +6,20 @@ import {CbxAddition} from "../lib/cbx-additions-stack";
 
 const branch = process.env.BUILD_BRANCH
 
-if (branch == undefined || !(['master', 'development'].includes(branch))) {
+if (branch == undefined || !(['main', 'development'].includes(branch))) {
     throw new Error(`"${branch}" is not a valid deployment target. Did you forget to set env var BUILD_BRANCH?`)
 }
 console.log(`building for "${branch}"`)
 
-const DESTINATION_BUCKET_NAME = "claus-destination"
-const API_HOST = ""
-const STREAM_HOST = ""
-
 const app = new cdk.App();
+
+const DESTINATION_BUCKET_NAME: string = app.node.tryGetContext('destination_bucket_name');
+const API_HOST: string = app.node.tryGetContext('api_host');
+const STREAM_HOST: string = app.node.tryGetContext('stream_host');
+
+console.log(DESTINATION_BUCKET_NAME, API_HOST, STREAM_HOST)
+
+throw new Error("LOL")
 
 const base = new VodFoundation(DESTINATION_BUCKET_NAME, app, `streaming-defaults-${branch}`);
 

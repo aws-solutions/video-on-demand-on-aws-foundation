@@ -38,7 +38,6 @@ def on_success(event):
 
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
-    return
     requests.post(
         url=f"{API_HOST}/{PATH_SUCCESS}",
         json={
@@ -60,7 +59,6 @@ def on_failure(event):
 
 def send_failure(file_identifier, error_code, error_msg):
     print(["FAILED: ", file_identifier, error_code, error_msg])
-    return
     requests.post(
         url=f"{API_HOST}/{PATH_FAILURE}",
         json={
