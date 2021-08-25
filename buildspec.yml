@@ -8,6 +8,6 @@ phases:
       - npm install -g aws-cdk
   build:
     commands:
-      - cd cdk-ts
+      - cd source/cdk
       - npm install
       - cdk deploy --all --require-approval never
