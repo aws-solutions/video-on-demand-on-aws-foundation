@@ -11,6 +11,7 @@ export class StreamingImmutable extends cdk.Stack {
 
         this.apiKey = new ApiKey(this, `streaming_api_key_${branch}`, {
             apiKeyName: `streaming_api_key_${branch}`,
+            description: `Key used for all ${branch} streaming endpoints`
         })
     }
 

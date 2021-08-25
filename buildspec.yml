@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - npm -g install typescript
+      - npm update -g typescript
+      - npm install -g aws-cdk
+  build:
+    commands:
+      - cd cdk-ts
+      - npm install
+      - cdk deploy --all --require-approval never
