@@ -13,6 +13,7 @@ import {ViewerProtocolPolicy} from '@aws-cdk/aws-cloudfront';
 import {EventsRuleToLambda} from '@aws-solutions-constructs/aws-events-rule-lambda';
 import {LambdaToSns} from '@aws-solutions-constructs/aws-lambda-sns';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
+import {Duration} from "@aws-cdk/core";
 
 
 export class VodFoundation extends cdk.Stack {
@@ -85,6 +86,11 @@ export class VodFoundation extends cdk.Stack {
             encryption: s3.BucketEncryption.S3_MANAGED,
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            lifecycleRules: [{
+                enabled: true,
+                prefix: "assets01/stream-",
+                expiration: Duration.days(30)
+            }]
         });
         this.sourceBucket = source
 

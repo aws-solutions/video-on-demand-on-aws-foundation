@@ -5,13 +5,26 @@ import {LayerVersion} from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam'
 import * as sqs from '@aws-cdk/aws-sqs';
 import {RetentionDays} from "@aws-cdk/aws-logs";
-import {LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
+import {ApiKey, LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
 import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
 import {IBucket} from "@aws-cdk/aws-s3";
 
 export class CbxAddition extends cdk.Stack {
-    constructor(srcBucketName: string, sourceBucket: IBucket, streamHost: string, apiHost: string, mediaConvertEndpoint: string, encodingComplete: LambdaToSns, branch: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(
+        apiKey: ApiKey,
+        convertDestinationBucketName: string,
+        skyfishSourceBucketName: string,
+        convertSourceBucket: IBucket,
+        streamHost: string,
+        apiHost: string,
+        mediaConvertEndpoint: string,
+        encodingComplete: LambdaToSns,
+        branch: string,
+        scope: cdk.Construct,
+        id: string,
+        props?: cdk.StackProps
+    ) {
         super(scope, id, props);
 
         const subtitleConversionLambda = new lambda.Function(this, `subtitle-conversion-${branch}`, {
@@ -29,6 +42,24 @@ export class CbxAddition extends cdk.Stack {
             code: lambda.Code.fromAsset('../video-ready/layer/layer.zip'),
             compatibleRuntimes: [lambda.Runtime.PYTHON_3_8],
             description: "Layer with dependencies for project python lambdas",
+        })
+
+        const ssmRootKeySsmPolicy = new iam.PolicyStatement({
+            actions: [
+                "ssm:GetParameterHistory",
+                "ssm:GetParametersByPath",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+            ],
+            resources: ["arn:aws:ssm:*:*:parameter/*"]
+        })
+
+        const kmsRootKeyDecryptPolicy = new iam.PolicyStatement({
+            actions: [
+                "kms:GetPublicKey",
+                "kms:Decrypt"
+            ],
+            resources: [`arn:aws:kms:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:key/c1a912e0-e464-49a1-a18d-2aa66453bb65`]
         })
 
         const videoReadyLambda = new lambda.Function(this, `video-ready-${branch}`, {
@@ -49,22 +80,8 @@ export class CbxAddition extends cdk.Stack {
                     actions: ["mediaconvert:GetJob"],
                     resources: [`arn:${cdk.Aws.PARTITION}:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
                 }),
-                new iam.PolicyStatement({
-                    actions: [
-                        "ssm:GetParameterHistory",
-                        "ssm:GetParametersByPath",
-                        "ssm:GetParameters",
-                        "ssm:GetParameter",
-                    ],
-                    resources: ["arn:aws:ssm:*:*:parameter/*"]
-                }),
-                new iam.PolicyStatement({
-                    actions: [
-                        "kms:GetPublicKey",
-                        "kms:Decrypt"
-                    ],
-                    resources: [`arn:aws:kms:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:key/c1a912e0-e464-49a1-a18d-2aa66453bb65`]
-                })
+                ssmRootKeySsmPolicy,
+                kmsRootKeyDecryptPolicy
             ]
         })
 
@@ -73,20 +90,31 @@ export class CbxAddition extends cdk.Stack {
             code: lambda.Code.fromAsset('../ingest'),
             handler: 'lambda_function.lambda_handler',
             environment: {
-                'SRC_BUCKET_NAME': srcBucketName,
-                'DEST_BUCKET_NAME': sourceBucket.bucketName
+                'SRC_BUCKET_NAME': skyfishSourceBucketName, // ingest source would be the skyfish storage (e.g. plovpenning)
+                'DEST_BUCKET_NAME': convertSourceBucket.bucketName // the ingest destination bucket is the convert source
             },
             logRetention: RetentionDays.ONE_MONTH,
 
             initialPolicy: [
                 new iam.PolicyStatement({
                     actions: ["s3:GetObject"],
-                    resources: [`arn:aws:s3:::${srcBucketName}/*`]
+                    resources: [`arn:aws:s3:::${skyfishSourceBucketName}/*`]
                 })
             ],
         })
 
-        sourceBucket.grantWrite(videoIngestLambda)
+        convertSourceBucket.grantWrite(videoIngestLambda)
+
+        const videoDeleteLambda = new lambda.Function(this, `video-delete-${branch}`, {
+            runtime: lambda.Runtime.PYTHON_3_8,
+            code: lambda.Code.fromAsset('../video-remove'),
+            handler: 'lambda_function.lambda_handler',
+            environment: {
+                'S3_SOURCE_FILE_BUCKET_NAME': convertSourceBucket.bucketName,
+                'S3_VIDEO_STREAMING_DESTINATION_BUCKET_NAME': convertDestinationBucketName,
+            },
+            logRetention: RetentionDays.ONE_MONTH
+        })
 
         const ingestDeadQueue = new sqs.Queue(this, 'dead-ingest-queue-${branch}', {
             queueName: `dead-ingest-queue-${branch}`,
@@ -114,13 +142,19 @@ export class CbxAddition extends cdk.Stack {
         }))
 
         //TODO: SSM param store access!
-
         const subtitlePublicDocsLambda = new lambda.Function(this, `subtitle-docs-${branch}`, {
             runtime: lambda.Runtime.PYTHON_3_7,
             code: lambda.Code.fromAsset('../subtitles/docs'),
             handler: 'lambda_function.lambda_handler',
             role: docsAccessRole,
-            logRetention: RetentionDays.ONE_MONTH
+            environment: {
+                'API_URL': "https://api.colourbox.com/docs.yml",
+            },
+            logRetention: RetentionDays.ONE_MONTH,
+            initialPolicy: [
+                ssmRootKeySsmPolicy,
+                kmsRootKeyDecryptPolicy
+            ]
         })
 
         const subtitlePrivateDocsLambda = new lambda.Function(this, `subtitle-private-docs-${branch}`, {
@@ -131,23 +165,29 @@ export class CbxAddition extends cdk.Stack {
             logRetention: RetentionDays.ONE_MONTH
         })
 
-
-        const subtitleConversionApi = new RestApi(this, `cdn_api-${branch}`, {
+        const streamingApi = new RestApi(this, `streaming-api-${branch}`, {
             restApiName: `cdn-${branch}`,
         })
 
-        subtitleConversionApi.root
-            .addMethod('GET', new LambdaIntegration(subtitlePublicDocsLambda, {proxy: true}))
+        const usagePlan = streamingApi.addUsagePlan('streaming-api-usageplan', {
+            name: `cdk_api_usageplan_${branch}`,
+            apiStages: [{
+                api: streamingApi,
+                stage: streamingApi.deploymentStage,
+            }],
+        })
 
-        subtitleConversionApi.root
-            .addMethod('POST', new LambdaIntegration(subtitleConversionLambda, {proxy: true}))
+        usagePlan.addApiKey(apiKey)
 
-        subtitleConversionApi.root
-            .addResource('3ea062c1-72cc-4f29-b4a8-b66d8276eb64')
-            .addMethod('GET', new LambdaIntegration(subtitlePrivateDocsLambda, {proxy: true}))
-
-        subtitleConversionApi.root
-            .addResource('public-docs')
-            .addMethod('GET', new LambdaIntegration(subtitlePublicDocsLambda, {proxy: true}))
+        const subtitles = streamingApi.root.addResource("subtitles")
+        subtitles.addMethod('GET', new LambdaIntegration(subtitlePublicDocsLambda, {proxy: true}), {apiKeyRequired: true})
+        subtitles.addMethod('POST', new LambdaIntegration(subtitleConversionLambda, {proxy: true}), {apiKeyRequired: true})
+        subtitles.addResource('3ea062c1-72cc-4f29-b4a8-b66d8276eb64')
+            .addMethod('GET', new LambdaIntegration(subtitlePrivateDocsLambda, {proxy: true}), {apiKeyRequired: true})
+        subtitles.addResource('public-docs')
+            .addMethod('GET', new LambdaIntegration(subtitlePublicDocsLambda, {proxy: true}), {apiKeyRequired: true})
+        streamingApi.root.addResource("streaming")
+            .addResource("{url}")
+            .addMethod('DELETE', new LambdaIntegration(videoDeleteLambda, {proxy: true}), {apiKeyRequired: true})
     }
 }

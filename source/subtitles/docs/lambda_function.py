@@ -10,8 +10,6 @@ import yaml
 
 from libraries.api import API
 
-docs_url = "https://api.colourbox.com/docs.yml"
-
 def get_api_credentials():
     ssm_client = boto3.client('ssm')
     key = ssm_client.get_parameter(
@@ -21,7 +19,7 @@ def get_api_credentials():
     return (key, secret)
 
 def lambda_handler(event, context):
-    docs_url = "https://api.colourbox.com/docs.yml"
+    docs_url = os.environ.get('API_URL')
     key, secret = get_api_credentials()
     api = API(key, secret, base_url = docs_url)
     auth_str = api.get_authorization_header(key, secret)
