@@ -8,6 +8,13 @@ Work-around: Add/update a fubar env var to force it to propagate
 cdk bootstrapping
 pipeline(?)
 
+### Parts
+streaming-immutable-development
+
+streaming-defaults-development
+
+streaming-custom-development
+
 ### Running test-version for debugging
 ```
 -c destination_bucket_name=claus-destination
