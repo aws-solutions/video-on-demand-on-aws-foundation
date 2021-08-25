@@ -166,7 +166,7 @@ export class CbxAddition extends cdk.Stack {
         })
 
         const streamingApi = new RestApi(this, `streaming-api-${branch}`, {
-            restApiName: `cdn-${branch}`,
+            restApiName: `streaming-api-${branch}`,
         })
 
         const usagePlan = streamingApi.addUsagePlan('streaming-api-usageplan', {
