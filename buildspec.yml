@@ -10,4 +10,4 @@ phases:
     commands:
       - cd source/cdk
       - npm install
-      - cdk deploy --all --require-approval never
+      - cdk deploy "streaming-mutable-*" --require-approval never
