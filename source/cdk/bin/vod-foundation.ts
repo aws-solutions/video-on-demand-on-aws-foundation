@@ -24,7 +24,7 @@ const immutable = new StreamingImmutable(branch, app, `streaming-immutable-${bra
 const base = new VodFoundation(
     DESTINATION_BUCKET_NAME,
     app,
-    `streaming-defaults-${branch}`
+    `streaming-mutable-defaults-${branch}`
 );
 
 new CbxAddition(
@@ -38,5 +38,5 @@ new CbxAddition(
     base.getSnsTopic(),
     branch,
     app,
-    `streaming-custom-${branch}`
+    `streaming-mutable-custom-${branch}`
 )
