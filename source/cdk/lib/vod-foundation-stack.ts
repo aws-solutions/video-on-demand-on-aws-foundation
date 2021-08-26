@@ -1,19 +1,17 @@
 import * as cdk from '@aws-cdk/core';
+import {Duration, RemovalPolicy} from '@aws-cdk/core';
 import * as s3 from '@aws-cdk/aws-s3';
-import {HttpMethods, IBucket} from '@aws-cdk/aws-s3';
+import {IBucket} from '@aws-cdk/aws-s3';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as subs from '@aws-cdk/aws-sns-subscriptions';
 /**
  * AWS Solution Constructs: https://docs.aws.amazon.com/solutions/latest/constructs/
  */
-import {CloudFrontToS3} from '@aws-solutions-constructs/aws-cloudfront-s3';
 import * as Cloudfront from '@aws-cdk/aws-cloudfront';
 import {ViewerProtocolPolicy} from '@aws-cdk/aws-cloudfront';
 import {EventsRuleToLambda} from '@aws-solutions-constructs/aws-events-rule-lambda';
 import {LambdaToSns} from '@aws-solutions-constructs/aws-lambda-sns';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
-import {Duration} from "@aws-cdk/core";
 
 
 export class VodFoundation extends cdk.Stack {
@@ -85,6 +83,7 @@ export class VodFoundation extends cdk.Stack {
             serverAccessLogsPrefix: 'source-bucket-logs/',
             encryption: s3.BucketEncryption.S3_MANAGED,
             publicReadAccess: false,
+            removalPolicy: RemovalPolicy.DESTROY,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
             lifecycleRules: [{
                 enabled: true,
