@@ -27,7 +27,7 @@ export class CbxAddition extends cdk.Stack {
     ) {
         super(scope, id, props);
 
-        const subtitleConversionLambda = new lambda.Function(this, `subtitle-${branch}-conversion`, {
+        const subtitleConversionLambda = new lambda.Function(this, `subtitle-conversion-${branch}`, {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../subtitles/conversion'),
             handler: 'lambda_function.lambda_handler',
@@ -116,12 +116,12 @@ export class CbxAddition extends cdk.Stack {
             logRetention: RetentionDays.ONE_MONTH
         })
 
-        const ingestDeadQueue = new sqs.Queue(this, 'video-streaming-${branch}-dead-ingest-queue', {
+        const ingestDeadQueue = new sqs.Queue(this, 'dead-ingest-queue-${branch}', {
             queueName: `dead-ingest-queue-${branch}`,
             removalPolicy: RemovalPolicy.RETAIN
         });
 
-        const ingestQueue = new sqs.Queue(this, 'video-streaming-${branch}-ingest-queue', {
+        const ingestQueue = new sqs.Queue(this, 'video-ingest-queue-${branch}', {
             queueName: `video-ingest-queue-${branch}`,
             deadLetterQueue: {
                 queue: ingestDeadQueue,
