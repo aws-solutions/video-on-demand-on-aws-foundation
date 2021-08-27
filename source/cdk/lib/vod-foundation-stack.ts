@@ -210,7 +210,6 @@ export class VodFoundation extends cdk.Stack {
                 JOB_SETTINGS: 'job-settings.json',
                 DESTINATION_BUCKET: destination.bucketName,
                 SOLUTION_ID: 'SO0146',
-                LOL: "nothing",
                 STACKNAME: cdk.Aws.STACK_NAME,
                 SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
                 /** SNS_TOPIC_ARN: added by the solution construct below */

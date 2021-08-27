@@ -10,7 +10,8 @@ phases:
     commands:
       - cd source/cdk
       - npm install
-      - cd source/custom-resource
+      - cd ..
+      - cd custom-resource
       - npm install
       - cd ../job-submit
       - npm install
