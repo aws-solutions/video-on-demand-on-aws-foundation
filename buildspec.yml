@@ -18,5 +18,5 @@ phases:
       - cd ../../deployment
       - chmod +x ./run-unit-tests.sh
       - ./run-unit-tests.sh
-      - cd ..
+      - cd ../source/cdk
       - cdk deploy "streaming-mutable-*" --require-approval never
