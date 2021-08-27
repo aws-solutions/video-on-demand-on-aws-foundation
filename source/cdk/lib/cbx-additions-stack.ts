@@ -94,11 +94,13 @@ export class CbxAddition extends cdk.Stack {
                 'DEST_BUCKET_NAME': convertSourceBucket.bucketName // the ingest destination bucket is the convert source
             },
             logRetention: RetentionDays.ONE_MONTH,
-
             initialPolicy: [
                 new iam.PolicyStatement({
                     actions: ["s3:GetObject"],
-                    resources: [`arn:aws:s3:::${skyfishSourceBucketName}/*`]
+                    resources: [
+                        `arn:aws:s3:::${skyfishSourceBucketName}`,
+                        `arn:aws:s3:::${skyfishSourceBucketName}/*`
+                    ]
                 })
             ],
         })
