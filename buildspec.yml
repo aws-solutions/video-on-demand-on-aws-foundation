@@ -10,4 +10,11 @@ phases:
     commands:
       - cd source/cdk
       - npm install
+      - cd source/custom-resource
+      - npm install
+      - cd ../job-submit
+      - npm install
+      - cd ../../deployment
+      - chmod +x ./run-unit-tests.sh
+      - ./run-unit-tests.sh
       - cdk deploy "streaming-mutable-*" --require-approval never
