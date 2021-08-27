@@ -3,6 +3,7 @@ import os
 
 import boto3
 import requests
+from urllib import parse
 
 import libraries.api as colourbox
 
@@ -39,7 +40,7 @@ def on_success(event):
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
     response = requests.post(
-        url=f"{API_HOST}/{PATH_SUCCESS}/{file_identifier}",
+        url=f"{API_HOST}/{PATH_SUCCESS}/{parse.quote(file_identifier)}",
         json={
             'stream_url': stream_url,
             'file_identifier': file_identifier,
@@ -61,7 +62,7 @@ def on_failure(event):
 def send_failure(file_identifier, error_code, error_msg):
     print(["FAILED: ", file_identifier, error_code, error_msg])
     response = requests.post(
-        url=f"{API_HOST}/{PATH_FAILURE}/{file_identifier}",
+        url=f"{API_HOST}/{PATH_FAILURE}/{parse.quote(file_identifier)}",
         json={
             'file_identifier': file_identifier,
             'error_code': error_code,
