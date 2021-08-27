@@ -15,6 +15,12 @@ streaming-defaults-development
 
 streaming-custom-development
 
+### Taking down the stack
+## Custom services
+Application has from AWS-authors 2 custom-resource-backed lambdas.
+These currently (2021-08-26) don't include support for their own teardown, so their deletion processes will hang (time out after 1 hour) and the delete will fail.
+To fix this, follow this: https://www.youtube.com/watch?v=hlJkMoCxR-I
+
 ### Running test-version for debugging
 ```
 -c destination_bucket_name=claus-destination

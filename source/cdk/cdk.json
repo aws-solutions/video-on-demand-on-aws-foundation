@@ -7,7 +7,7 @@
     "development": {
       "destination_bucket_name": "claus-destination",
       "api_host": "https://claus-api.cbx.xyz",
-      "stream_host": "https://dpv7mez7ofol6.cloudfront.net",
+      "stream_host": "https://dlsxw0w3exqhl.cloudfront.net",
       "src_bucket_name": "colourbox.plovpenning.file.test"
     },
     "prod": {

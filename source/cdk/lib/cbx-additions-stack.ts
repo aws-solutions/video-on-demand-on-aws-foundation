@@ -70,8 +70,8 @@ export class CbxAddition extends cdk.Stack {
             environment: {
                 'HOST': apiHost,
                 'MEDIA_CONVERT_ENDPOINT': mediaConvertEndpoint,
-                'PATH_SUCCESS': "/media/stream/success",
-                'PATH_FAILURE': "/media/stream/failure",
+                'PATH_SUCCESS': "media/stream/success",
+                'PATH_FAILURE': "media/stream/failure",
                 'STREAM_HOST': streamHost,
             },
             logRetention: RetentionDays.ONE_MONTH,

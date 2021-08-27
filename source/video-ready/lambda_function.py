@@ -38,7 +38,7 @@ def on_success(event):
 
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
-    requests.post(
+    response = requests.post(
         url=f"{API_HOST}/{PATH_SUCCESS}",
         json={
             'stream_url': stream_url,
@@ -46,6 +46,7 @@ def send_success(stream_url, file_identifier):
         },
         headers=colourbox.API.with_auth_header({})
     )
+    handle_request_response(response)
 
 
 def on_failure(event):
@@ -59,7 +60,7 @@ def on_failure(event):
 
 def send_failure(file_identifier, error_code, error_msg):
     print(["FAILED: ", file_identifier, error_code, error_msg])
-    requests.post(
+    response = requests.post(
         url=f"{API_HOST}/{PATH_FAILURE}",
         json={
             'file_identifier': file_identifier,
@@ -68,6 +69,12 @@ def send_failure(file_identifier, error_code, error_msg):
         },
         headers=colourbox.API.with_auth_header({})
     )
+    handle_request_response(response)
+
+
+def handle_request_response(response):
+    if response.status_code != 200:
+        raise Exception(f"Unable to report to {API_HOST}/{PATH_SUCCESS}, {response.status_code} received")
 
 
 def event_failed(event):
@@ -75,7 +82,9 @@ def event_failed(event):
 
 
 def lambda_handler(event, context):
+    print(event)
     if event_failed(event):
         on_failure(event)
     else:
         on_success(event)
+    print(f"result posted to {API_HOST}")
