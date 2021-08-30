@@ -39,6 +39,9 @@ def on_success(event):
 
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
+
+    handle_request_response(requests.get(url=f"{API_HOST}/echo"))
+
     response = requests.post(
         url=f"{API_HOST}/{PATH_SUCCESS}/{parse.quote(file_identifier)}",
         json={
