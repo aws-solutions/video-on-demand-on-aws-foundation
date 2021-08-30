@@ -40,7 +40,9 @@ def on_success(event):
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
 
-    handle_request_response(requests.get(url=f"{API_HOST}/echo"))
+    r = requests.get(url=f"{API_HOST}/echo")
+    print(f"{r.status_code} from /echo get")
+    #handle_request_response(r)
 
     response = requests.post(
         url=f"{API_HOST}/{PATH_SUCCESS}/{parse.quote(file_identifier)}",
