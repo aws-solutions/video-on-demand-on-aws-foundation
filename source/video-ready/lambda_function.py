@@ -31,12 +31,9 @@ def get_file_source_name_from_job_id(job_id):
 
 def on_success(event):
     msg = json.loads(event['Records'][0]['Sns']['Message'])
-    if 'uri' not in msg['InputDetails']:
-        print("no uri-attribute in payload:")
-        print(msg)
     send_success(
         get_dns_uri(msg['Outputs']['HLS_GROUP'][0]),
-        get_media_identifier(msg['InputDetails']['uri']),
+        get_media_identifier(msg['Outputs']['HLS_GROUP'][0]),
     )
 
 
