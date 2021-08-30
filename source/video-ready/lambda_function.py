@@ -40,10 +40,6 @@ def on_success(event):
 def send_success(stream_url, file_identifier):
     print(["SUCCESS: ", stream_url, file_identifier])
 
-    r = requests.get(url=f"{API_HOST}/echo")
-    print(f"{r.status_code} from /echo get")
-    #handle_request_response(r)
-
     response = requests.post(
         url=f"{API_HOST}/{PATH_SUCCESS}/{parse.quote(file_identifier)}",
         json={
@@ -80,7 +76,7 @@ def send_failure(file_identifier, error_code, error_msg):
 
 def handle_request_response(response):
     if response.status_code != 200:
-        raise Exception(f"Unable to report to {API_HOST}/{PATH_SUCCESS}, {response.status_code} received")
+        raise Exception(f"Unable to report to {response.request.url}, {response.status_code} received")
 
 
 def event_failed(event):
