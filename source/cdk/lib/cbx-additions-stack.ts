@@ -9,6 +9,7 @@ import {ApiKey, LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
 import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
 import {IBucket} from "@aws-cdk/aws-s3";
+import * as s3 from "@aws-cdk/aws-s3";
 
 export class CbxAddition extends cdk.Stack {
     constructor(
@@ -86,6 +87,8 @@ export class CbxAddition extends cdk.Stack {
             ]
         })
 
+        const ingestSourceBucket = s3.Bucket.fromBucketName(this, "ingest-source", skyfishSourceBucketName)
+
         const videoIngestLambda = new lambda.Function(this, `video-ingest-${branch}`, {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../ingest'),
@@ -95,17 +98,8 @@ export class CbxAddition extends cdk.Stack {
                 'DEST_BUCKET_NAME': convertSourceBucket.bucketName // the ingest destination bucket is the convert source
             },
             logRetention: RetentionDays.ONE_MONTH,
-            initialPolicy: [
-                new iam.PolicyStatement({
-                    actions: ["s3:GetObject"],
-                    resources: [
-                        `arn:aws:s3:::${skyfishSourceBucketName}`,
-                        `arn:aws:s3:::${skyfishSourceBucketName}/*`
-                    ]
-                })
-            ],
         })
-
+        ingestSourceBucket.grantRead(videoIngestLambda)
         convertSourceBucket.grantWrite(videoIngestLambda)
 
         const videoDeleteLambda = new lambda.Function(this, `video-delete-${branch}`, {
