@@ -19,6 +19,7 @@ export class VodFoundation extends cdk.Stack {
     private readonly snsTopic: LambdaToSns
     private readonly mediaConvertEndpoint: string
     private readonly sourceBucket: IBucket
+    private readonly destinationBucket: IBucket
 
     public getSnsTopic(): LambdaToSns
     {
@@ -31,6 +32,11 @@ export class VodFoundation extends cdk.Stack {
     }
 
     public getSourceBucket(): IBucket
+    {
+        return this.sourceBucket
+    }
+
+    public getDestinationBucket(): IBucket
     {
         return this.sourceBucket
     }
@@ -104,6 +110,7 @@ export class VodFoundation extends cdk.Stack {
         };
 
         const destination = s3.Bucket.fromBucketName(this, "destination", destinationBucketName)
+
 
         const op = new Cloudfront.OriginRequestPolicy(this, "originRequestPolicy", {
             queryStringBehavior: Cloudfront.OriginRequestQueryStringBehavior.none(),
@@ -379,5 +386,6 @@ export class VodFoundation extends cdk.Stack {
 
         this.snsTopic = snsTopic
         this.mediaConvertEndpoint = customResourceEndpoint.getAttString('Endpoint')
+        this.destinationBucket = destination
     }
 }

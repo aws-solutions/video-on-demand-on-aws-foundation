@@ -29,7 +29,7 @@ const base = new VodFoundation(
 
 new CbxAddition(
     immutable.getApiKey(),
-    DESTINATION_BUCKET_NAME,
+    base.getDestinationBucket(),
     SRC_BUCKET_NAME,
     base.getSourceBucket(),
     STREAM_HOST,

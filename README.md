@@ -37,32 +37,6 @@ See `source/custom-resource/lib/s3/index.js`
 ### Custom origin bucket
 Resource buckets very likely a plovpenninge bucket
 
-```
-{
-    "Version": "2008-10-17",
-    "Id": "PolicyForCloudFrontPrivateContent",
-    "Statement": [
-        [...]
-        {
-            "Sid": "3",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity <IDENTITY>"
-            },
-            "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-            ],
-            "Resource": [
-                "arn:aws:s3:::<bucket-name>",
-                "arn:aws:s3:::<bucket-name>/*"
-            ]
-        }
-    ]
-}
-```
-
 ### Custom destination bucket
 
 Bucket-permissions -> Bucket-policy:

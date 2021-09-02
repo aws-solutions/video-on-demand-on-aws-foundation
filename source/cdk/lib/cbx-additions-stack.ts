@@ -14,7 +14,7 @@ import * as s3 from "@aws-cdk/aws-s3";
 export class CbxAddition extends cdk.Stack {
     constructor(
         apiKey: ApiKey,
-        convertDestinationBucketName: string,
+        convertDestinationBucket: IBucket,
         skyfishSourceBucketName: string,
         convertSourceBucket: IBucket,
         streamHost: string,
@@ -108,10 +108,12 @@ export class CbxAddition extends cdk.Stack {
             handler: 'lambda_function.lambda_handler',
             environment: {
                 'S3_SOURCE_FILE_BUCKET_NAME': convertSourceBucket.bucketName,
-                'S3_VIDEO_STREAMING_DESTINATION_BUCKET_NAME': convertDestinationBucketName,
+                'S3_VIDEO_STREAMING_DESTINATION_BUCKET_NAME': convertDestinationBucket.bucketName,
             },
             logRetention: RetentionDays.ONE_MONTH
         })
+
+        convertDestinationBucket.grantDelete(videoDeleteLambda)
 
         const ingestDeadQueue = new sqs.Queue(this, 'dead-ingest-queue-${branch}', {
             queueName: `dead-ingest-queue-${branch}`,
