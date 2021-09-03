@@ -114,6 +114,7 @@ export class CbxAddition extends cdk.Stack {
         })
 
         convertDestinationBucket.grantDelete(videoDeleteLambda)
+        convertDestinationBucket.grantRead(videoDeleteLambda)
 
         const ingestDeadQueue = new sqs.Queue(this, 'dead-ingest-queue-${branch}', {
             queueName: `dead-ingest-queue-${branch}`,
