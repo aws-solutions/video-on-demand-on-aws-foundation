@@ -1,5 +1,5 @@
 import * as cdk from "@aws-cdk/core";
-import {RemovalPolicy} from "@aws-cdk/core";
+import {Duration, RemovalPolicy} from "@aws-cdk/core";
 import * as lambda from '@aws-cdk/aws-lambda';
 import {LayerVersion} from '@aws-cdk/aws-lambda';
 import * as iam from '@aws-cdk/aws-iam'
@@ -106,6 +106,7 @@ export class CbxAddition extends cdk.Stack {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../video-remove'),
             handler: 'lambda_function.lambda_handler',
+            timeout: Duration.seconds(10),
             environment: {
                 'S3_SOURCE_FILE_BUCKET_NAME': convertSourceBucket.bucketName,
                 'S3_VIDEO_STREAMING_DESTINATION_BUCKET_NAME': convertDestinationBucket.bucketName,
