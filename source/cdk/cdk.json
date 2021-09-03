@@ -11,9 +11,10 @@
       "src_bucket_name": "colourbox.plovpenning.file.test"
     },
     "prod": {
-      "destination_bucket_name": "",
-      "api_host": "",
-      "stream_host": ""
+      "destination_bucket_name": "video-streaming-destination-1d09gqh09aixb",
+      "api_host": "https://api.colourbox.com",
+      "stream_host": "https://video.skyfish.com",
+      "src_bucket_name": "colourbox.plovpenning.file"
     }
   }
 }
