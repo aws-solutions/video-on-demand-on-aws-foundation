@@ -38,7 +38,7 @@ export class VodFoundation extends cdk.Stack {
 
     public getDestinationBucket(): IBucket
     {
-        return this.sourceBucket
+        return this.destinationBucket
     }
 
     constructor(destinationBucketName: string, scope: cdk.Construct, id: string, props?: cdk.StackProps) {
