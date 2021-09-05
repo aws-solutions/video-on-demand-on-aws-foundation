@@ -64,6 +64,8 @@ aws s3 cp ./regional-s3-assets/ s3://my-bucket-us-east-1/video-on-demand-on-aws-
 ### 4. Launch the CloudFormation template.
 * Deploy the cloudFormation template from deployment/global-assets/video-on-demand-on-aws-foundation.template into the same region as you newly created S3 bucket.
 
+## Converting video files
+Videos should be uploaded to the newly created S3 bucket folder ```[stack-name]-source[id]/assets01/```. Once the video is converted you'll find the video and poster image here ```[stack-name]-destination[id]/[job-uuid]/```.
 
 ***
 
