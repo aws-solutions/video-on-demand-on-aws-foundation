@@ -568,6 +568,35 @@
               "StreamInfResolution": "INCLUDE"
             }
           }
+        },
+        {
+          "Name": "File Group",
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": "s3://destinationbucket/guid/hls/"
+            }
+          },
+          "Outputs": [
+            {
+              "VideoDescription": {
+                "CodecSettings": {
+                  "Codec": "FRAME_CAPTURE",
+                  "FrameCaptureSettings": {
+                    "Quality": 80,
+                    "FramerateNumerator": 30,
+                    "FramerateDenominator": 80,
+                    "MaxCaptures": 1
+                  }
+                }
+              },
+              "ContainerSettings": {
+                "Container": "RAW"
+              },
+              "Extension": "jpg"
+            }
+          ],
+          "CustomName": "Poster Images"
         }
       ],
       "AdAvailOffset": 0,
