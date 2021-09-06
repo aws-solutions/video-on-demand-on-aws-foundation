@@ -10,7 +10,7 @@
       "stream_host": "https://dlsxw0w3exqhl.cloudfront.net",
       "src_bucket_name": "colourbox.plovpenning.file.test"
     },
-    "prod": {
+    "main": {
       "destination_bucket_name": "video-streaming-destination-1d09gqh09aixb",
       "api_host": "https://api.colourbox.com",
       "stream_host": "https://video.skyfish.com",
