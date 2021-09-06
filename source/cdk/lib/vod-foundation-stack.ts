@@ -118,6 +118,12 @@ export class VodFoundation extends cdk.Stack {
             headerBehavior: Cloudfront.OriginRequestHeaderBehavior.allowList('Origin', 'Access-Control-Allow-Origin', 'Access-Control-Request-Method','Access-Control-Request-Headers')
         })
 
+        const cp = new Cloudfront.CachePolicy(this, "cachePolicy", {
+            queryStringBehavior: Cloudfront.OriginRequestQueryStringBehavior.none(),
+            cookieBehavior: Cloudfront.OriginRequestCookieBehavior.none(),
+            headerBehavior: Cloudfront.OriginRequestHeaderBehavior.allowList('Origin', 'Access-Control-Allow-Origin', 'Access-Control-Request-Method','Access-Control-Request-Headers')
+        })
+
         const cloudFront = new Cloudfront.Distribution(this, "CloudFront", {
             defaultBehavior: {
                 origin: new origins.S3Origin(destination),
@@ -127,6 +133,9 @@ export class VodFoundation extends cdk.Stack {
                 smoothStreaming: true,
                 originRequestPolicy: {
                     originRequestPolicyId: op.originRequestPolicyId
+                },
+                cachePolicy: {
+                    cachePolicyId: cp.cachePolicyId
                 }
             }
             ,
