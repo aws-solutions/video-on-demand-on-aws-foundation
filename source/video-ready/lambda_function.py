@@ -1,16 +1,11 @@
 import json
 import os
+from urllib import parse
 
 import boto3
 import requests
-from urllib import parse
 
 import libraries.api as colourbox
-
-API_HOST = os.environ['HOST']
-MEDIA_CONVERT_ENDPOINT = os.environ['MEDIA_CONVERT_ENDPOINT']
-PATH_SUCCESS = os.environ['PATH_SUCCESS']
-PATH_FAILURE = os.environ['PATH_FAILURE']
 
 
 def get_dns_uri(cloudfront_uri):
@@ -22,7 +17,7 @@ def get_media_identifier(uri):
 
 
 def get_file_source_name_from_job_id(job_id):
-    client = boto3.client('mediaconvert', endpoint_url=MEDIA_CONVERT_ENDPOINT)
+    client = boto3.client('mediaconvert', endpoint_url=os.environ['MEDIA_CONVERT_ENDPOINT'])
     document = client.get_job(
         Id=job_id
     )
@@ -38,12 +33,13 @@ def on_success(event):
 
 
 def send_success(stream_url, file_identifier):
-    print(["SUCCESS: ", stream_url, file_identifier])
+    formatted_url = format_for_stream_host(stream_url)
+    print(["SUCCESS: ", stream_url, formatted_url, file_identifier])
 
     response = requests.post(
-        url=f"{API_HOST}/{PATH_SUCCESS}/{parse.quote(file_identifier)}",
+        url=f"{os.environ['HOST']}/{os.environ['PATH_SUCCESS']}/{parse.quote(file_identifier)}",
         json={
-            'stream_url': stream_url,
+            'stream_url': formatted_url,
             'file_identifier': file_identifier,
         },
         headers=colourbox.API.with_auth_header({})
@@ -63,7 +59,7 @@ def on_failure(event):
 def send_failure(file_identifier, error_code, error_msg):
     print(["FAILED: ", file_identifier, error_code, error_msg])
     response = requests.post(
-        url=f"{API_HOST}/{PATH_FAILURE}/{parse.quote(file_identifier)}",
+        url=f"{os.environ['HOST']}/{os.environ['PATH_FAILURE']}/{parse.quote(file_identifier)}",
         json={
             'file_identifier': file_identifier,
             'error_code': error_code,
@@ -74,9 +70,18 @@ def send_failure(file_identifier, error_code, error_msg):
     handle_request_response(response)
 
 
+def format_for_stream_host(cloudfront_url):
+    """ Expects format:
+    https://d1psf2h8e73cwr.cloudfront.net/9ba6013d-445c-424f-9a6a-408b0518297c/AppleHLS1/stream-123-456.m3u8
+    """
+    url = list(parse.urlsplit(cloudfront_url))
+    return f"{os.environ['STREAM_HOST']}{'/'.join(url[2:-2])}"
+
+
 def handle_request_response(response):
     if response.status_code != 200:
-        raise Exception(f"Unable to report to {response.request.method} for {response.request.url}, {response.status_code} received")
+        raise Exception(
+            f"Unable to report to {response.request.method} for {response.request.url}, {response.status_code} received")
 
 
 def event_failed(event):
@@ -89,4 +94,4 @@ def lambda_handler(event, context):
         on_failure(event)
     else:
         on_success(event)
-    print(f"result posted to {API_HOST}")
+    print(f"result posted to {os.environ['HOST']}")
