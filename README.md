@@ -1,27 +1,47 @@
-# Custom Colourbox related things
+# Colourbox Streaming
 
-### Issues
-Issue: Updating configs used as env var isn't propagated unless the construct has a property updated directly
+## Overview
+The project is based off of a Video-On-Demand architecture builds [by AWS](https://aws.amazon.com/solutions/implementations/video-on-demand-on-aws/) which provides the base infrastructure in a CDK-compliant project on to which the streaming service is build.
 
-Work-around: Add/update a fubar env var to force it to propagate
-### Bootstrapping
+The API puts a message into a SQS queue which eventually results in the HLS files being put in a destination bucket, triggering a callback to the API containing the same identifier as the API initially provided with the SQS message.
+
+### Configuration
+`/source/cdk/cdk.json` has config for both production (main) and beta (development)
+### Colourbox API
+The API interacts through both SQS messaging and API-gateways (subtitle management / deletion of streams)
+### Plugging
+The project is source/destination agnostic in the sense that both the bucket that holds the raw files and the final output bucket are provided as part of the configuration. This made it easy to swap from the previous existing solution without any downtime.
+#### Custom origin
+Expected to be plovpenninge
+#### Custom destination
+Can be whatever, current setup runs with the original streaming-solution output bucket.
+### Supported files
+
+
+## Building and Bootstrapping
+<its a CDK project, link guide>
 cdk bootstrapping
-pipeline(?)
 
-### Parts
-streaming-immutable-development
+## Parts
+`streaming-immutable-development`:
 
-streaming-defaults-development
+Contains items that the CDK deploy doesn't like to attempt to redeploy. As such this is excluded from the pipeline but may become an unnecessary part in the future.
 
-streaming-custom-development
+`streaming-defaults-development`:
 
-### Taking down the stack
-## Custom services
+The [original AWS CDK project](https://github.com/awslabs/video-on-demand-on-aws-foundations) that was forked and adapted. Try to keep changes to this at a minimum to ease upstream merges. This basically contains the entire flow of moving a file from a folder, converting and moving result to a final cloudfront-backed destination folder.
+
+`streaming-custom-development`:
+
+Contains all the custom additions used to communicate between the API and the default-solution a long with subtitles, cleanup and more.
+
+## Taking down the stack
+Just like any cloudformation project, removing the project will remove all components. Storage is usually persisted and "orphaned" after delete, unless the component has its lifecycle specifically configured to die (and delete content) with the stack.
+### Custom services
 Application has from AWS-authors 2 custom-resource-backed lambdas.
-These currently (2021-08-26) don't include support for their own teardown, so their deletion processes will hang (time out after 1 hour) and the delete will fail.
-To fix this, follow this: https://www.youtube.com/watch?v=hlJkMoCxR-I
+These currently (2021-08-26) don't include support for their own teardown, so their deletion processes will hang (time out after 1 hour) and the deletion will fail. To fix this, follow this: https://www.youtube.com/watch?v=hlJkMoCxR-I
 
-### Running test-version for debugging
+## Running test-version for debugging
 ```
 -c destination_bucket_name=claus-destination
 -c api_host=claus-api.cbx.xyz
@@ -31,13 +51,13 @@ To fix this, follow this: https://www.youtube.com/watch?v=hlJkMoCxR-I
 cdk deploy -c destination_bucket_name=claus-destination -c api_host=claus-api.cbx.xyz stream_host=https://dpv7mez7ofol6.cloudfront.net --all
 cdk synth -c destination_bucket_name=claus-destination -c api_host=claus-api.cbx.xyz stream_host=https://dpv7mez7ofol6.cloudfront.net --all
 `
-### Supported file-types
+## Supported file-types
 See `source/custom-resource/lib/s3/index.js`
 
-### Custom origin bucket
+## Custom origin bucket
 Resource buckets very likely a plovpenninge bucket
 
-### Custom destination bucket
+## Custom destination bucket
 
 Bucket-permissions -> Bucket-policy:
 ```

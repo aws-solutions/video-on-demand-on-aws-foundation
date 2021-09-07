@@ -97,6 +97,7 @@ export class CbxAddition extends cdk.Stack {
                 'SRC_BUCKET_NAME': skyfishSourceBucketName, // ingest source would be the skyfish storage (e.g. plovpenning)
                 'DEST_BUCKET_NAME': convertSourceBucket.bucketName // the ingest destination bucket is the convert source
             },
+            timeout: Duration.seconds(60),
             logRetention: RetentionDays.ONE_MONTH,
         })
         ingestSourceBucket.grantRead(videoIngestLambda)
@@ -106,7 +107,7 @@ export class CbxAddition extends cdk.Stack {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../video-remove'),
             handler: 'lambda_function.lambda_handler',
-            timeout: Duration.seconds(10),
+            timeout: Duration.seconds(60),
             environment: {
                 'S3_SOURCE_FILE_BUCKET_NAME': convertSourceBucket.bucketName,
                 'S3_VIDEO_STREAMING_DESTINATION_BUCKET_NAME': convertDestinationBucket.bucketName,
