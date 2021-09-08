@@ -15,12 +15,12 @@ The project is source/destination agnostic in the sense that both the bucket tha
 Expected to be plovpenninge
 #### Custom destination
 Can be whatever, current setup runs with the original streaming-solution output bucket.
-### Supported files
-
 
 ## Building and Bootstrapping
-<its a CDK project, link guide>
-cdk bootstrapping
+(Ran from context of the source/cdk folder)
+ - cdk bootstrap (only needed on first run)
+ - cdk deploy
+Note: using this directly is discouraged, use the normal git-procedure and rely on CICD setup instead.
 
 ## Parts
 `streaming-immutable-development`:
