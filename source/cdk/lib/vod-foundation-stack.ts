@@ -12,6 +12,7 @@ import {ViewerProtocolPolicy} from '@aws-cdk/aws-cloudfront';
 import {EventsRuleToLambda} from '@aws-solutions-constructs/aws-events-rule-lambda';
 import {LambdaToSns} from '@aws-solutions-constructs/aws-lambda-sns';
 import * as origins from '@aws-cdk/aws-cloudfront-origins';
+import {WhiteList} from "./white-list";
 
 
 export class VodFoundation extends cdk.Stack {
@@ -136,9 +137,9 @@ export class VodFoundation extends cdk.Stack {
                 },
                 cachePolicy: {
                     cachePolicyId: cp.cachePolicyId
-                }
-            }
-            ,
+                },
+            },
+            geoRestriction: Cloudfront.GeoRestriction.allowlist(...(new WhiteList().getCloudfront())),
             comment: `${cdk.Aws.STACK_NAME} Video on Demand Foundation`,
             logBucket: logsBucket,
             logFilePrefix: 'cloudfront-logs'
