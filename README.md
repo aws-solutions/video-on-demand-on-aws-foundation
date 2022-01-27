@@ -1,5 +1,8 @@
 # Colourbox Streaming
 
+### IMPORTANT NOTE:
+This project only encodes and outputs files in destination bucket. It does not handle any cloudformation og CDN configuration for provided destination bucket.
+
 ## Overview
 The project is based off of a Video-On-Demand architecture builds [by AWS](https://aws.amazon.com/solutions/implementations/video-on-demand-on-aws/) which provides the base infrastructure in a CDK-compliant project on to which the streaming service is build.
 
