@@ -68,7 +68,8 @@ export class CbxAddition extends cdk.Stack {
             code: lambda.Code.fromAsset('../video-ready'),
             handler: 'lambda_function.lambda_handler',
             layers: [dependency_layer],
-            retryAttempts: 0,
+            retryAttempts: 2,
+            timeout: Duration.seconds(10),
             environment: {
                 'HOST': apiHost,
                 'MEDIA_CONVERT_ENDPOINT': mediaConvertEndpoint,
