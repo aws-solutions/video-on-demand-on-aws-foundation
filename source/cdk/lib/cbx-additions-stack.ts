@@ -8,8 +8,12 @@ import {RetentionDays} from "@aws-cdk/aws-logs";
 import {ApiKey, LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
 import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
-import {IBucket} from "@aws-cdk/aws-s3";
 import * as s3 from "@aws-cdk/aws-s3";
+import {IBucket} from "@aws-cdk/aws-s3";
+import * as sns from '@aws-cdk/aws-sns';
+import {SnsAction} from "@aws-cdk/aws-cloudwatch-actions";
+import {ComparisonOperator} from "@aws-cdk/aws-cloudwatch";
+
 
 export class CbxAddition extends cdk.Stack {
     constructor(
@@ -63,12 +67,30 @@ export class CbxAddition extends cdk.Stack {
             resources: [`arn:aws:kms:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:key/c1a912e0-e464-49a1-a18d-2aa66453bb65`]
         })
 
+        const videoReadyLambdaDeadLetterQueue = new sqs.Queue(this, 'dead-ready-lambda-queue-${branch}', {
+            queueName: `dead-ready-queue-${branch}`,
+            removalPolicy: RemovalPolicy.RETAIN,
+
+        });
+
+        const failedReadyMetric = videoReadyLambdaDeadLetterQueue.metricApproximateNumberOfMessagesVisible()
+        const alarm = failedReadyMetric.createAlarm(this, 'Alarm', {
+            threshold: 0,
+            evaluationPeriods: 1,
+            datapointsToAlarm: 1,
+            alarmName: "",
+            comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+        });
+        const topic = sns.Topic.fromTopicArn(this, "dev-topic", "arn:aws:sns:eu-west-1:233403125868:Dev")
+        alarm.addAlarmAction(new SnsAction(topic))
+
         const videoReadyLambda = new lambda.Function(this, `video-ready-${branch}`, {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../video-ready'),
             handler: 'lambda_function.lambda_handler',
             layers: [dependency_layer],
             retryAttempts: 2,
+            deadLetterQueue: videoReadyLambdaDeadLetterQueue,
             timeout: Duration.seconds(10),
             environment: {
                 'HOST': apiHost,

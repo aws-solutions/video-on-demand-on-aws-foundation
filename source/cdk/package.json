@@ -21,6 +21,7 @@
     "typescript": "~3.9.7"
   },
   "dependencies": {
+    "@aws-cdk/aws-cloudwatch-actions": "^1.150.0",
     "@aws-cdk/aws-iam": "1.110.0",
     "@aws-cdk/aws-lambda": "1.110.0",
     "@aws-cdk/aws-mediaconvert": "^1.110.0",
