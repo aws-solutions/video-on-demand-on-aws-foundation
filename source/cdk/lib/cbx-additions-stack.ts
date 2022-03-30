@@ -8,8 +8,8 @@ import {RetentionDays} from "@aws-cdk/aws-logs";
 import {ApiKey, LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway"
 import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import {LambdaToSns} from "@aws-solutions-constructs/aws-lambda-sns";
-import {IBucket} from "@aws-cdk/aws-s3";
 import * as s3 from "@aws-cdk/aws-s3";
+import {IBucket} from "@aws-cdk/aws-s3";
 
 export class CbxAddition extends cdk.Stack {
     constructor(
@@ -69,6 +69,7 @@ export class CbxAddition extends cdk.Stack {
             handler: 'lambda_function.lambda_handler',
             layers: [dependency_layer],
             retryAttempts: 2,
+            deadLetterQueueEnabled: true,
             timeout: Duration.seconds(10),
             environment: {
                 'HOST': apiHost,
@@ -94,6 +95,7 @@ export class CbxAddition extends cdk.Stack {
             runtime: lambda.Runtime.PYTHON_3_8,
             code: lambda.Code.fromAsset('../ingest'),
             handler: 'lambda_function.lambda_handler',
+            deadLetterQueueEnabled: true,
             environment: {
                 'SRC_BUCKET_NAME': skyfishSourceBucketName, // ingest source would be the skyfish storage (e.g. plovpenning)
                 'DEST_BUCKET_NAME': convertSourceBucket.bucketName // the ingest destination bucket is the convert source
