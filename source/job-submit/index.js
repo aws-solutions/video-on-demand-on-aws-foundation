@@ -25,10 +25,17 @@ exports.handler = async (event,context) => {
         console.log(event);
         const srcVideo = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
         const srcBucket = decodeURIComponent(event.Records[0].s3.bucket.name);
-        const settingsFile = `${srcVideo.split("/")[0]}/${JOB_SETTINGS}`;
+        // Split platform folder 
+        const platformFolderArr = srcVideo.split("/");
+        // Job settings for specific platform
+        const settingsFile = `${platformFolderArr[0]}/${platformFolderArr[1]}/${JOB_SETTINGS}`;
         const guid = uuidv4();
         const inputPath = `s3://${srcBucket}/${srcVideo}`;
-        const outputPath = `s3://${DESTINATION_BUCKET}/${guid}`;
+        // Get output folder directory from platform
+        const outputFolderDir = platformFolderArr.slice(0, -1);
+        // Specify platform directory to vod destination folder
+        const platformDir = outputFolderDir.join('/').replace(/, ([^,]*)$/);
+        const outputPath = `s3://${DESTINATION_BUCKET}/${platformDir}/${guid}`;
         const metaData = {
             Guid:guid,
             StackName:STACKNAME,
