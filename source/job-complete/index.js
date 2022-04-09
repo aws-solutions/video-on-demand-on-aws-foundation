@@ -45,7 +45,7 @@ exports.handler = async (event) => {
                      */
                     const results = await utils.writeManifest(SOURCE_BUCKET,JOB_MANIFEST,jobDetails);
                     /**
-                     * if enabled send annoymous data to the solution builder api, this helps us with future release
+                     * if enabled send anonymous data to the solution builder api, this helps us with future release
                      */
                     if (METRICS === 'Yes') {
                         await utils.sendMetrics(SOLUTION_ID,VERSION,UUID,results); 
@@ -70,7 +70,7 @@ exports.handler = async (event) => {
                 }
                 break;
             default:
-                throw new Error('Unknow job status');
+                throw new Error('Unknown job status');
         }
     } catch (err) {
         await utils.sendSns(SNS_TOPIC_ARN,STACKNAME,'PROCESSING ERROR',err);
