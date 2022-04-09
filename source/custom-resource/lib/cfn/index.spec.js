@@ -29,11 +29,11 @@ const responseData = {
 
 jest.mock('axios');
 
-describe('#CFN RESONSE::', () => {
+describe('#CFN RESPONSE::', () => {
     /**
-     * mock the axios.put success with jest and then call sendResonse, should return the status (200)
+     * mock the axios.put success with jest and then call sendResponse, should return the status (200)
      */
-    it('should return "200" on a send cfn response sucess', async () => {
+    it('should return "200" on a send cfn response success', async () => {
         axios.mockResolvedValue({
             status:200
         });
@@ -42,7 +42,7 @@ describe('#CFN RESONSE::', () => {
         });
     });
     /**
-     * mock mock the axios.put failure with jest and then call sendResonse, should return the status (200)
+     * mock mock the axios.put failure with jest and then call sendResponse, should return the status (200)
      */
     it('should throw "NetworkError" on a send cfn response fail', async () => {
         axios.mockRejectedValue(new Error('NetworkError'));

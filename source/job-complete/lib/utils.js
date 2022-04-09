@@ -26,7 +26,7 @@ const writeManifest = async (bucket, manifestFile,jobDetails) => {
  
         if (jobDetails.detail) {
             /**
-             * event is a newly submited job to MediaConvert, creating a recored 
+             * event is a newly submitted job to MediaConvert, creating a record
              * for the source file in the manifest file
              */
             console.log(`Writting input info for ${jobDetails.detail.jobId}`);
@@ -182,8 +182,8 @@ const sendSns = async (topic,stackName,status,data) => {
 };
 
 /**
- * Remove any sensative data from the job details and send metrics to
- * AWS Solution metrics API. This data is annoymous and helps us with our
+ * Remove any sensitive data from the job details and send metrics to
+ * AWS Solution metrics API. This data is anonymous and helps us with our
  * roadmap fo the solution. 
  */
 const sendMetrics = async (solutionId,version,uuid,results) => {

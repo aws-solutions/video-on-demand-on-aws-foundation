@@ -15,7 +15,7 @@ exports.handler = async (event, context) => {
             if (event.LogicalResourceId === 'Endpoint') {
                 try  {
                     /**
-                    * Create UUID for the stack creation. this is used by AWS for annomous metrics
+                    * Create UUID for the stack creation. this is used by AWS for anonymous metrics
                     */
                     responseData.UUID = uuidv4();
                     /**
@@ -33,7 +33,7 @@ exports.handler = async (event, context) => {
                     */
                     await s3.setDefaults(SourceBucket);
                     /**
-                     * Set S3 event notification on the source S3 bucket to trigger the job Submint
+                     * Set S3 event notification on the source S3 bucket to trigger the job Submit
                      * Lambda function.
                      */
                     await s3.putNotification(SourceBucket,LambdaArn);

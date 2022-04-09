@@ -5,14 +5,14 @@
 const AWS = require('aws-sdk');
 
 /**
- * Download Job Settings from s3 and run a basic validationvalidate 
+ * Download Job Settings from s3 and run a basic validation
 */
 const getJobSettings = async (bucket, settingsFile) => {
     console.log(`Downloading Job Settings file: ${settingsFile}, from S3: ${bucket}`);
     let settings;
     try {
         /**
-         * Download the dsettings file for S3
+         * Download the settings file for S3
          */
         const s3 = new AWS.S3();
         settings = await s3.getObject({
@@ -38,7 +38,7 @@ const getJobSettings = async (bucket, settingsFile) => {
 
 /**
  * Parse the job settings file and update the inputs/outputs. the num values are
- * to dupport multiple output groups of the same type. 
+ * to support multiple output groups of the same type.
  * 
  */
 const updateJobSettings = async (job, inputPath, outputPath, metadata, role) => {
@@ -122,7 +122,7 @@ const createJob = async (job, endpoint) => {
     });
     try {
         await mediaconvert.createJob(job).promise();
-        console.log(`job subbmited to MediaConvert:: ${JSON.stringify(job, null, 2)}`);
+        console.log(`job submitted to MediaConvert:: ${JSON.stringify(job, null, 2)}`);
     } catch (err) {
         throw err;
     }

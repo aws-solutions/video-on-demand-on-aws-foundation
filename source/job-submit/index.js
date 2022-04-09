@@ -20,7 +20,7 @@ exports.handler = async (event,context) => {
     
     try {
         /**
-         * define inputs/ouputs and a unique string for the mediaconver output path in S3. 
+         * define inputs/outputs and a unique string for the mediaconver output path in S3.
          */
         console.log(event);
         const srcVideo = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));

@@ -16,7 +16,7 @@ export class VodFoundation extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         /**
-         * CloudFormation Template Descrption
+         * CloudFormation Template Description
          */
         this.templateOptions.description = '(SO0146) v1.1.0: Video on Demand on AWS Foundation Solution Implementation';
         /**
@@ -249,8 +249,8 @@ export class VodFoundation extends cdk.Stack {
         /**
          * Process outputs lambda function, invoked by CloudWatch events for MediaConvert.
          * Parses the CW event outputs, creates the CloudFront URLs for the outputs, updates
-         * a manifest file in the destination bucket and send an SNS notfication.
-         * Enviroment variables for the destination bucket and SNS topic are added by the
+         * a manifest file in the destination bucket and send an SNS notification.
+         * Environment variables for the destination bucket and SNS topic are added by the
          *  solutions constructs
          */
         const jobComplete = new lambda.Function(this, 'JobComplete', {
@@ -301,7 +301,7 @@ export class VodFoundation extends cdk.Stack {
         };
         /**
          * Custom resource to configure the source S3 bucket; upload default job-settings file and 
-         * enabble event notifications to trigger the job-submit lambda function
+         * enable event notifications to trigger the job-submit lambda function
          */
         new cdk.CustomResource(this, 'S3Config', {
             serviceToken: customResourceLambda.functionArn,
@@ -338,8 +338,8 @@ export class VodFoundation extends cdk.Stack {
         });
         /**
          * Solutions construct, creates an SNS topic and a Lambda function  with permission
-         * to publish messages to the topic. Also adds the SNS topic to the lambda Enviroment
-         * varribles
+         * to publish messages to the topic. Also adds the SNS topic to the lambda Environment
+         * variables
         */
         const snsTopic = new LambdaToSns(this, 'Notification', {
             existingLambdaObj: jobSubmit
@@ -362,7 +362,7 @@ export class VodFoundation extends cdk.Stack {
         });
         new cdk.CfnOutput(this, 'DestinationBucket', {
             value: destination.bucketName,
-            description: 'Source S3 Bucket used to host all MediaConvert ouputs',
+            description: 'Source S3 Bucket used to host all MediaConvert outputs',
             exportName: `${ cdk.Aws.STACK_NAME}-DestinationBucket`
         });
         new cdk.CfnOutput(this, 'CloudFrontDomain', {

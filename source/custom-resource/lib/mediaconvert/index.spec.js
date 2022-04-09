@@ -21,7 +21,7 @@ describe('GetEndPoint',() => {
     beforeEach(() => {
         mockDescribeEndpoints.mockReset();
     });
-    it('Decribe Endpoints Success test', async () => {
+    it('Describe Endpoints Success test', async () => {
         mockDescribeEndpoints.mockImplementation(() => {
             return {
               promise() {
