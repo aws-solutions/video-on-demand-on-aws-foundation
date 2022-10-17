@@ -4,4 +4,4 @@ import * as cdk from '@aws-cdk/core';
 import { VodFoundation } from '../lib/vod-foundation-stack';
 
 const app = new cdk.App();
-new VodFoundation(app, 'VodFoundation');
+new VodFoundation(app, 'VodFoundation'); // NOSONAR

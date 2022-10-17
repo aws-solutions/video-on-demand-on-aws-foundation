@@ -17,7 +17,7 @@
 # Parameters:
 #  - source-bucket-base-name: Name for the S3 bucket location where the template will source the Lambda
 #    code from. The template will append '-[region_name]' to this bucket name.
-#    For example: ./build-s3-dist.sh solutions my-solution v1.0.0
+#    For example: ./build-s3-dist.sh solutions my-solution v1.2.0
 #    The template will then expect the source code to be located in the solutions-[region_name] bucket
 #  - solution-name: name of the solution for consistency
 #  - version-code: version of the package
@@ -30,7 +30,7 @@ cdk_version=1.63.0
 # Check to see if input has been provided:
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
     echo "Please provide all required parameters for the build script"
-    echo "For example: ./build-s3-dist.sh solutions trademarked-solution-name v1.0.0"
+    echo "For example: ./build-s3-dist.sh solutions trademarked-solution-name v1.2.0"
     exit 1
 fi
 
@@ -58,11 +58,6 @@ rm -rf $staging_dist_dir
 mkdir -p $staging_dist_dir
 
 echo "------------------------------------------------------------------------------"
-echo "[Init] Update local CDK CLI for building"
-echo "------------------------------------------------------------------------------"
-npm install -g aws-cdk@latest
-
-echo "------------------------------------------------------------------------------"
 echo "[Init] Install dependencies for the cdk-solution-helper"
 echo "------------------------------------------------------------------------------"
 cd $template_dir/cdk-solution-helper
@@ -71,6 +66,9 @@ npm install --production
 echo "------------------------------------------------------------------------------"
 echo "[Synth] CDK Project"
 echo "------------------------------------------------------------------------------"
+# Make sure user has the newest CDK version
+npm uninstall -g aws-cdk && npm install -g aws-cdk@1
+
 cd $source_dir/cdk
 npm install
 cdk synth --output=$staging_dist_dir

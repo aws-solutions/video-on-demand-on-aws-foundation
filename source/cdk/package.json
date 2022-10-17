@@ -1,34 +1,36 @@
 {
   "name": "vod-foundation",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "bin": {
     "vod-foundation": "bin/vod-foundation.js"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
+    "test": "jest --coverage --updateSnapshot",
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.110.0",
+    "@aws-cdk/assert": "1.173.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
-    "aws-cdk": "^1.63.0",
-    "jest": "^26.4.2",
-    "ts-jest": "^26.2.0",
+    "aws-cdk": "^1.173.0",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.5.6",
     "ts-node": "^8.1.0",
-    "typescript": "~3.9.7"
+    "typescript": "^3.9.10"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.110.0",
-    "@aws-cdk/aws-s3": "1.110.0",
-    "@aws-cdk/aws-iam": "1.110.0",
-    "@aws-cdk/aws-lambda": "1.110.0",
-    "@aws-cdk/aws-sns-subscriptions": "1.110.0",
-    "@aws-solutions-constructs/aws-cloudfront-s3": "1.110.0",
-    "@aws-solutions-constructs/aws-events-rule-lambda": "1.110.0",
-    "@aws-solutions-constructs/aws-lambda-sns": "1.110.0",
+    "@aws-cdk/core": "1.173.0",
+    "@aws-cdk/aws-s3": "1.173.0",
+    "@aws-cdk/aws-iam": "1.173.0",
+    "@aws-cdk/aws-lambda": "1.173.0",
+    "@aws-cdk/aws-servicecatalogappregistry": "1.173.0",
+    "@aws-cdk/aws-applicationinsights": "1.173.0",
+    "@aws-cdk/aws-sns-subscriptions": "1.173.0",
+    "@aws-solutions-constructs/aws-cloudfront-s3": "1.173.0",
+    "@aws-solutions-constructs/aws-events-rule-lambda": "1.173.0",
+    "@aws-solutions-constructs/aws-lambda-sns": "1.173.0",
     "source-map-support": "^0.5.16"
   }
 }

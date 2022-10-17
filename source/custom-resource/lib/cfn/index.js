@@ -35,6 +35,7 @@ const sendResponse = async (event, context, responseStatus, responseData) => {
 
         data = await axios(params);
     } catch (err) {
+        console.error(err);
         throw err;
     }
     return data.status;
