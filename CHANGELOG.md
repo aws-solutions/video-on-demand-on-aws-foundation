@@ -4,17 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - 2022-10-17
-### Added
-- AppRegistry Application Stack Association
-- Application Insights in AppRegistry
-- SonarQube properties file: sonar-project.properties
-- Added unit tests with 80% code coverage
-### Changed
-- Changed deployment/run-unit-tests.sh to generate unit test coverage reports
-### Contributors
-* @sandimciin
-* @eggoynes
 
 ## [1.1.0] - 2021-7-29
 ### Added 
@@ -33,8 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added extra steps when building in the Readme file. (https://github.com/awslabs/video-on-demand-on-aws-foundations/issues/4)
 - Updated Axios to version 0.21.1
 
-### Contributors
-* @eggoynes
 ## [1.0.0] - 2020-11-05
 ### Added
 - All files, initial version

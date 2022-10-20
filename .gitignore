@@ -1,0 +1,18 @@
+# compiled output
+**/dist
+**/global-s3-assets
+**/regional-s3-assets
+**/open-source
+**/.zip
+**/tmp
+
+# dependencies
+**/coverage
+**/node_modules
+
+# misc
+**/npm-debug.log
+**/package-lock.json
+**/.vscode/settings.json
+**/.DS_Store
+**/.vscode

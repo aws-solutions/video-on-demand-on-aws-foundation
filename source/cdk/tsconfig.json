@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "commonjs",
-    "lib": ["es2018", "ES6"],
+    "lib": ["es2018"],
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -21,8 +21,5 @@
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "exclude": ["cdk.out"]
 }

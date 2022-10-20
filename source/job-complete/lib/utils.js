@@ -76,7 +76,8 @@ const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
     console.log('Processing MediaConvert outputs');
     const buildUrl = (originalValue) => originalValue.slice(5).split('/').splice(1).join('/');
     const mediaconvert = new AWS.MediaConvert({
-        endpoint: endpoint
+        endpoint: endpoint,
+        customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     let jobDetails = {};
     
@@ -119,7 +120,6 @@ const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
         if (jobDetails.Outputs[output] < 1) delete jobDetails.Outputs[output];
     }
     } catch (err) {
-        console.error(err);
         throw err;
     }
      console.log(`JOB DETAILS:: ${JSON.stringify(jobDetails, null, 2)}`);
@@ -176,9 +176,9 @@ const sendSns = async (topic,stackName,status,data) => {
             Subject: `${stackName}: Job ${status} id:${id}`,
         }).promise();
     } catch (err) {
-        console.error(err);
         throw err;
     }
+    return;
 };
 
 /**
@@ -232,6 +232,7 @@ const sendMetrics = async (solutionId,version,uuid,results) => {
     } catch (err) {
         console.log(err);
     }
+    return;
 };
 
 

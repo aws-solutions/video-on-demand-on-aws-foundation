@@ -7,7 +7,7 @@
   "description": "cfn custom resources for video on demand",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --collect-coverage lib/*.spec.js"
   },
   "dependencies": {
     "lodash": "*",
@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.609.0",
-    "jest": "^26.6.3"
+    "jest": "^26.4.2"
   },
   "private": true,
   "author": {

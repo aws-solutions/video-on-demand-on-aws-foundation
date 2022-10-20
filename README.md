@@ -30,7 +30,13 @@ For details on deploying the solution using the CDK see the [CDK Getting Started
 ### 1. Running unit tests for customization
 Run unit tests to make sure added customization passes the tests:
 ```
-cd ./deployment
+cd source/custom-resource
+npm install
+cd ../job-submit
+npm install
+
+# Then go back to deployment directory
+cd ../../deployment
 chmod +x ./run-unit-tests.sh
 ./run-unit-tests.sh
 ```
@@ -45,14 +51,14 @@ aws s3 mb s3://my-bucket-us-east-1
 Build the distributable:
 ```
 chmod +x ./build-s3-dist.sh
-./build-s3-dist.sh my-bucket video-on-demand-on-aws-foundation v1.2.0
+./build-s3-dist.sh my-bucket video-on-demand-on-aws-foundation v1.0.0
 ```
 
 > **Notes**: The _build-s3-dist_ script expects the bucket name as one of its parameters, and this value should not include the region suffix.
 
 Deploy the distributable to the Amazon S3 bucket in your account:
 ```
-aws s3 cp ./regional-s3-assets/ s3://my-bucket-us-east-1/video-on-demand-on-aws-foundation/v1.2.0/ --recursive --acl bucket-owner-full-control
+aws s3 cp ./regional-s3-assets/ s3://my-bucket-us-east-1/video-on-demand-on-aws-foundation/v1.0.0/ --recursive --acl bucket-owner-full-control
 ```
 
 ### 4. Launch the CloudFormation template.
@@ -61,7 +67,7 @@ aws s3 cp ./regional-s3-assets/ s3://my-bucket-us-east-1/video-on-demand-on-aws-
 
 ***
 
-Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -74,3 +80,5 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+This solution collects anonymous operational metrics to help AWS improve the quality of features of the solution. For more information, including how to disable this capability, please see the implementation guide.

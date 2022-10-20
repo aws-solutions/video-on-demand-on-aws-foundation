@@ -118,14 +118,15 @@ const updateJobSettings = async (job, inputPath, outputPath, metadata, role) => 
 const createJob = async (job, endpoint) => {
     const mediaconvert = new AWS.MediaConvert({
         endpoint: endpoint,
+        customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     try {
         await mediaconvert.createJob(job).promise();
         console.log(`job subbmited to MediaConvert:: ${JSON.stringify(job, null, 2)}`);
     } catch (err) {
-        console.error(err);
         throw err;
     }
+    return;
 };
 
 
@@ -148,9 +149,9 @@ const sendError = async (topic,stackName,logGroupName,err) => {
             Subject: `${stackName}: Encoding Job Submit Failed`,
         }).promise();
     } catch (err) {
-        console.error(err);
         throw err;
     }
+    return;
 };
 
 
