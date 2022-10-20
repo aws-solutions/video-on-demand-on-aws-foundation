@@ -120,6 +120,7 @@ const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
         if (jobDetails.Outputs[output] < 1) delete jobDetails.Outputs[output];
     }
     } catch (err) {
+        console.error(err);
         throw err;
     }
      console.log(`JOB DETAILS:: ${JSON.stringify(jobDetails, null, 2)}`);
@@ -176,9 +177,9 @@ const sendSns = async (topic,stackName,status,data) => {
             Subject: `${stackName}: Job ${status} id:${id}`,
         }).promise();
     } catch (err) {
+        console.error(err);
         throw err;
     }
-    return;
 };
 
 /**
@@ -232,7 +233,6 @@ const sendMetrics = async (solutionId,version,uuid,results) => {
     } catch (err) {
         console.log(err);
     }
-    return;
 };
 
 

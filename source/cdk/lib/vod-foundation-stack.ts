@@ -4,6 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import { HttpMethods } from '@aws-cdk/aws-s3';
+import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
+import * as applicationinsights from '@aws-cdk/aws-applicationinsights';
 /**
  * AWS Solution Constructs: https://docs.aws.amazon.com/solutions/latest/constructs/
  */
@@ -18,11 +20,13 @@ export class VodFoundation extends cdk.Stack {
         /**
          * CloudFormation Template Descrption
          */
-        this.templateOptions.description = '(SO0146) v1.1.0: Video on Demand on AWS Foundation Solution Implementation';
+        const solutionId = 'SO0146'
+        const solutionName = 'Video on Demand on AWS Foundation'
+        this.templateOptions.description = '(SO0146) v1.2.0: Video on Demand on AWS Foundation Solution Implementation';
         /**
          * Mapping for sending anonymous metrics to AWS Solution Builders API
          */
-        new cdk.CfnMapping(this, 'Send', {
+        new cdk.CfnMapping(this, 'Send', { // NOSONAR
             mapping: {
                 AnonymousUsage: {
                     Data: 'Yes'
@@ -173,12 +177,14 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
-                    },{
-                        id: 'W89',
-                        reason: 'AWS Lambda does not require VPC for this solution.'
-                    },{
-                        id: 'W92',
-                        reason: 'ReservedConcurrentExecutions not required'
+                },
+                {
+                    id: 'W89',
+                    reason: 'Invalid warning: lambda not needed in VPC'
+                },
+                {
+                    id: 'W92',
+                    reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'
                 }]
             }
         };
@@ -237,13 +243,15 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
-                },{
+                },
+                {
                     id: 'W89',
-                    reason: 'AWS Lambda does not require VPC for this solution.'
-                },{
+                    reason: 'Invalid warning: lambda not needed in VPC'
+                },
+                {
                     id: 'W92',
-                    reason: 'ReservedConcurrentExecutions not required'
-            }]
+                    reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'
+                }]
             }
         };
         /**
@@ -290,20 +298,22 @@ export class VodFoundation extends cdk.Stack {
                 rules_to_suppress: [{
                     id: 'W58',
                     reason: 'Invalid warning: function has access to cloudwatch'
-                },{
+                },
+                {
                     id: 'W89',
-                    reason: 'AWS Lambda does not require VPC for this solution.'
-                },{
+                    reason: 'Invalid warning: lambda not needed in VPC'
+                },
+                {
                     id: 'W92',
-                    reason: 'ReservedConcurrentExecutions not required'
-            }]
+                    reason: 'Invalid warning: lambda does not need ReservedConcurrentExecutions'
+                }]
             }
         };
         /**
          * Custom resource to configure the source S3 bucket; upload default job-settings file and 
          * enabble event notifications to trigger the job-submit lambda function
          */
-        new cdk.CustomResource(this, 'S3Config', {
+        new cdk.CustomResource(this, 'S3Config', { // NOSONAR
             serviceToken: customResourceLambda.functionArn,
             properties: {
                 SourceBucket: source.bucketName,
@@ -314,7 +324,7 @@ export class VodFoundation extends cdk.Stack {
          * Solution constructs, creates a CloudWatch event rule to trigger the process
          * outputs lambda functions.
          */
-        new EventsRuleToLambda(this, 'EventTrigger', {
+        new EventsRuleToLambda(this, 'EventTrigger', { // NOSONAR
             existingLambdaObj: jobComplete,
             eventRuleProps: {
                 enabled: true,
@@ -344,7 +354,7 @@ export class VodFoundation extends cdk.Stack {
         const snsTopic = new LambdaToSns(this, 'Notification', {
             existingLambdaObj: jobSubmit
         });
-        new LambdaToSns(this, 'CompleteSNS', {
+        new LambdaToSns(this, 'CompleteSNS', { // NOSONAR
             existingLambdaObj: jobComplete,
             existingTopicObj: snsTopic.snsTopic
         });
@@ -352,25 +362,63 @@ export class VodFoundation extends cdk.Stack {
          * Subscribe the admin email address to the SNS topic created but the construct.
          */
         snsTopic.snsTopic.addSubscription(new subs.EmailSubscription(adminEmail.valueAsString))
+
+        /**
+        * AppRegistry
+        */
+        const applicationName = `vod-foundation-${cdk.Aws.STACK_NAME}`;
+        const attributeGroup = new appreg.AttributeGroup(this, 'AppRegistryAttributeGroup', {
+            attributeGroupName: cdk.Aws.STACK_NAME,
+            description: "Attribute group for solution information.",
+            attributes: {
+                ApplicationType: 'AWS-Solutions',
+                SolutionVersion: '%%VERSION%%',
+                SolutionID: solutionId,
+                SolutionName: solutionName
+            }
+        });
+        const appRegistry = new appreg.Application(this, 'AppRegistryApp', {
+            applicationName: applicationName,
+            description: `Service Catalog application to track and manage all your resources. The SolutionId is ${solutionId} and SolutionVersion is %%VERSION%%.`
+        });
+        appRegistry.associateStack(this);
+        cdk.Tags.of(appRegistry).add('solutionId', solutionId);
+        cdk.Tags.of(appRegistry).add('SolutionName', solutionName);
+        cdk.Tags.of(appRegistry).add('SolutionDomain', 'CloudFoundations');
+        cdk.Tags.of(appRegistry).add('SolutionVersion', '%%VERSION%%');
+        cdk.Tags.of(appRegistry).add('appRegistryApplicationName', 'vod-foundation-stack');
+        cdk.Tags.of(appRegistry).add('ApplicationType', 'AWS-Solutions');
+
+        appRegistry.node.addDependency(attributeGroup);
+        appRegistry.associateAttributeGroup(attributeGroup);
+
+        const appInsights = new applicationinsights.CfnApplication(this, 'ApplicationInsightsApp', {
+            resourceGroupName: `AWS_AppRegistry_Application-${applicationName}`,
+            autoConfigurationEnabled: true,
+            cweMonitorEnabled: true,
+            opsCenterEnabled: true
+        });
+        appInsights.node.addDependency(appRegistry);
+        
         /**
          * Stack Outputs
         */
-        new cdk.CfnOutput(this, 'SourceBucket', {
+        new cdk.CfnOutput(this, 'SourceBucket', { // NOSONAR
             value: source.bucketName,
             description: 'Source S3 Bucket used to host source video and MediaConvert job settings files',
             exportName: `${ cdk.Aws.STACK_NAME}-SourceBucket`
         });
-        new cdk.CfnOutput(this, 'DestinationBucket', {
+        new cdk.CfnOutput(this, 'DestinationBucket', { // NOSONAR
             value: destination.bucketName,
             description: 'Source S3 Bucket used to host all MediaConvert ouputs',
             exportName: `${ cdk.Aws.STACK_NAME}-DestinationBucket`
         });
-        new cdk.CfnOutput(this, 'CloudFrontDomain', {
+        new cdk.CfnOutput(this, 'CloudFrontDomain', { // NOSONAR
             value: cloudFront.cloudFrontWebDistribution.distributionDomainName,
             description: 'CloudFront Domain Name',
             exportName: `${ cdk.Aws.STACK_NAME}-CloudFrontDomain`
         });
-        new cdk.CfnOutput(this, 'SnsTopic', {
+        new cdk.CfnOutput(this, 'SnsTopic', { // NOSONAR
             value: snsTopic.snsTopic.topicName,
             description: 'SNS Topic used to capture the VOD workflow outputs including errors',
             exportName: `${ cdk.Aws.STACK_NAME}-SnsTopic`

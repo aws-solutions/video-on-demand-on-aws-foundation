@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1666048455698" clover="3.2.0">
+  <project timestamp="1666048455698" name="All files">
+    <metrics statements="63" coveredstatements="63" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="64" coveredelements="64" complexity="0" loc="63" ncloc="63" packages="1" files="1" classes="1"/>
+    <file name="vod-foundation-stack.ts" path="/codebuild/output/src926407134/src/source/cdk/lib/vod-foundation-stack.ts">
+      <metrics statements="63" coveredstatements="63" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <line num="1" count="1" type="stmt"/>
+      <line num="2" count="1" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="6" count="1" type="stmt"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="12" count="1" type="stmt"/>
+      <line num="13" count="1" type="stmt"/>
+      <line num="14" count="1" type="stmt"/>
+      <line num="17" count="1" type="stmt"/>
+      <line num="19" count="1" type="stmt"/>
+      <line num="23" count="1" type="stmt"/>
+      <line num="24" count="1" type="stmt"/>
+      <line num="25" count="1" type="stmt"/>
+      <line num="29" count="1" type="stmt"/>
+      <line num="39" count="1" type="stmt"/>
+      <line num="47" count="1" type="stmt"/>
+      <line num="55" count="1" type="stmt"/>
+      <line num="56" count="1" type="stmt"/>
+      <line num="70" count="1" type="stmt"/>
+      <line num="77" count="1" type="stmt"/>
+      <line num="78" count="1" type="stmt"/>
+      <line num="89" count="1" type="stmt"/>
+      <line num="109" count="1" type="stmt"/>
+      <line num="134" count="1" type="stmt"/>
+      <line num="137" count="1" type="stmt"/>
+      <line num="149" count="1" type="stmt"/>
+      <line num="153" count="1" type="stmt"/>
+      <line num="174" count="1" type="stmt"/>
+      <line num="175" count="1" type="stmt"/>
+      <line num="194" count="1" type="stmt"/>
+      <line num="201" count="1" type="stmt"/>
+      <line num="234" count="1" type="stmt"/>
+      <line num="240" count="1" type="stmt"/>
+      <line num="241" count="1" type="stmt"/>
+      <line num="264" count="1" type="stmt"/>
+      <line num="295" count="1" type="stmt"/>
+      <line num="296" count="1" type="stmt"/>
+      <line num="316" count="1" type="stmt"/>
+      <line num="327" count="1" type="stmt"/>
+      <line num="354" count="1" type="stmt"/>
+      <line num="357" count="1" type="stmt"/>
+      <line num="364" count="1" type="stmt"/>
+      <line num="369" count="1" type="stmt"/>
+      <line num="370" count="1" type="stmt"/>
+      <line num="380" count="1" type="stmt"/>
+      <line num="384" count="1" type="stmt"/>
+      <line num="385" count="1" type="stmt"/>
+      <line num="386" count="1" type="stmt"/>
+      <line num="387" count="1" type="stmt"/>
+      <line num="388" count="1" type="stmt"/>
+      <line num="389" count="1" type="stmt"/>
+      <line num="390" count="1" type="stmt"/>
+      <line num="392" count="1" type="stmt"/>
+      <line num="393" count="1" type="stmt"/>
+      <line num="395" count="1" type="stmt"/>
+      <line num="401" count="1" type="stmt"/>
+      <line num="406" count="1" type="stmt"/>
+      <line num="411" count="1" type="stmt"/>
+      <line num="416" count="1" type="stmt"/>
+      <line num="421" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

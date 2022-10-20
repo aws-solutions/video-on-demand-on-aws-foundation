@@ -8,7 +8,6 @@ const options = { customUserAgent: process.env.SOLUTION_IDENTIFIER };
 const AWS = require('aws-sdk');
 const fs = require('fs');
 
-//AWS.config.logger = console;
 
 /**
  * Create Default configuration in the source S3 bucket
@@ -28,10 +27,10 @@ const setDefaults = async (bucket) => {
             Key: 'jobs-manifest.json'
         }).promise();
     } catch (err) {
+        console.error(err);
         throw err;
     }
     console.log('creating files complete')
-    return;
 };
 
 /**
@@ -338,9 +337,9 @@ const putNotification = async (bucket,lambdaArn) => {
             }
         }).promise();
     } catch (err) {
+        console.error(err);
         throw err;
     }
-    return;
 };
 
 

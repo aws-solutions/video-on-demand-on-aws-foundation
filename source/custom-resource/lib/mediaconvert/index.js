@@ -7,7 +7,6 @@
 const options = { customUserAgent: process.env.SOLUTION_IDENTIFIER };
 const AWS = require('aws-sdk');
 
-//AWS.config.logger = console;
 
 /**
  *  Get MediaConvert API Endpoint for the account/region
@@ -19,6 +18,7 @@ const getEndpoint = async () => {
         const data = await mediaconvert.describeEndpoints().promise();
         endpoint = data.Endpoints[0].Url;
     } catch (err) {
+        console.error(err);
         throw err;
     }
     return endpoint;

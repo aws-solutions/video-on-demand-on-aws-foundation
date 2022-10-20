@@ -124,9 +124,9 @@ const createJob = async (job, endpoint) => {
         await mediaconvert.createJob(job).promise();
         console.log(`job subbmited to MediaConvert:: ${JSON.stringify(job, null, 2)}`);
     } catch (err) {
+        console.error(err);
         throw err;
     }
-    return;
 };
 
 
@@ -149,9 +149,9 @@ const sendError = async (topic,stackName,logGroupName,err) => {
             Subject: `${stackName}: Encoding Job Submit Failed`,
         }).promise();
     } catch (err) {
+        console.error(err);
         throw err;
     }
-    return;
 };
 
 
