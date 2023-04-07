@@ -12,6 +12,10 @@ The solution includes two AWS lambda functions: a job submit function to create 
 
 For more detail including using your own settings file please see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html)
 
+## Updating the settings file
+
+The `job-settings.json` file is checked into source control in this repository, but it needs to be manually updated after changes are made. You can do this by replacing the existing `job-setting.json` in the `assets01/aws-video-on-demand-packages-ca-central-1` bucket.
+
 ## Creating a custom build
 
 The solution can be deployed through the CloudFormation template available on the solution home page: [Video on Demand on AWS](https://aws.amazon.com/solutions/video-on-demand-on-aws/).

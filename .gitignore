@@ -10,3 +10,7 @@ cdk.out
 
 # Parcel default cache directory
 .parcel-cache
+
+# Deployment assets
+deployment/global-s3-assets
+deployment/regional-s3-assets
