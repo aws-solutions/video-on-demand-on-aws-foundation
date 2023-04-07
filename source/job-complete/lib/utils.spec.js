@@ -166,9 +166,11 @@ describe("Utils SendSns", () => {
         },
       };
     });
-    await utils.sendSns("topic", "stackName", "ERROR", test.snsData).catch((err) => {
-      expect(err.toString()).toEqual("SEND FAILED");
-    });
+    await utils
+      .sendSns("topic", "stackName", "ERROR", test.snsData)
+      .catch((err) => {
+        expect(err.toString()).toEqual("SEND FAILED");
+      });
   });
 });
 
@@ -177,12 +179,14 @@ describe("Utils SendMetrics::", () => {
     axios.mockResolvedValue({
       status: 200,
     });
-    await utils.sendMetrics("solutionId","version", "uuid", test.metricsData);
+    await utils.sendMetrics("solutionId", "version", "uuid", test.metricsData);
   });
   it('should throw "NetworkError" on a send metrics response fail', async () => {
     axios.mockRejectedValue(new Error("NetworkError"));
-    await utils.sendMetrics("solutionId","version", "uuid", test.metricsData).catch((err) => {
-      expect(err.toString()).toEqual("Error: NetworkError");
-    });
+    await utils
+      .sendMetrics("solutionId", "version", "uuid", test.metricsData)
+      .catch((err) => {
+        expect(err.toString()).toEqual("Error: NetworkError");
+      });
   });
 });

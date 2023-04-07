@@ -12,35 +12,35 @@ const sendResponse = async (event, context, responseStatus, responseData) => {
 
   try {
     const responseBody = JSON.stringify({
-        Status: responseStatus,
-        Reason:
+      Status: responseStatus,
+      Reason:
         "See the details in CloudWatch Log Stream: " + context.logStreamName,
-        PhysicalResourceId: event.LogicalResourceId,
-        StackId: event.StackId,
-        RequestId: event.RequestId,
-        LogicalResourceId: event.LogicalResourceId,
-        Data: responseData
+      PhysicalResourceId: event.LogicalResourceId,
+      StackId: event.StackId,
+      RequestId: event.RequestId,
+      LogicalResourceId: event.LogicalResourceId,
+      Data: responseData,
     });
 
     const params = {
-        url: event.ResponseURL,
-        method: "put",
-        port: 443,
-        headers: {
-            "content-type": "",
-            "content-length": responseBody.length,
-        },
-        data: responseBody,
+      url: event.ResponseURL,
+      method: "put",
+      port: 443,
+      headers: {
+        "content-type": "",
+        "content-length": responseBody.length,
+      },
+      data: responseBody,
     };
 
-        data = await axios(params);
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-    return data.status;
+    data = await axios(params);
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+  return data.status;
 };
 
 module.exports = {
-    sendResponse: sendResponse,
+  sendResponse: sendResponse,
 };

@@ -2,7 +2,7 @@
   "name": "vod-custom-resource",
   "version": "1.0.0",
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "description": "cfn custom resources for video on demand",
   "main": "index.js",

@@ -5,8 +5,8 @@ them for use with the AWS Solutions publishing pipeline. This function performs 
 
 #### Lambda function preparation
 
-Replaces the AssetParameter-style properties that identify source code for Lambda functions with the common variables 
-used by the AWS Solutions publishing pipeline. 
+Replaces the AssetParameter-style properties that identify source code for Lambda functions with the common variables
+used by the AWS Solutions publishing pipeline.
 
 - `Code.S3Bucket` is assigned the `%%BUCKET_NAME%%` placeholder value.
 - `Code.S3Key` is assigned the `%%SOLUTION_NAME%%`/`%%VERSION%%` placeholder value.
@@ -15,6 +15,7 @@ used by the AWS Solutions publishing pipeline.
 These placeholders are then replaced with the appropriate values using the default find/replace operation run by the pipeline.
 
 Before:
+
 ```
 "examplefunction67F55935": {
       "Type": "AWS::Lambda::Function",
@@ -61,6 +62,7 @@ Before:
 ```
 
 After helper function run:
+
 ```
 "examplefunction67F55935": {
       "Type": "AWS::Lambda::Function",
@@ -73,6 +75,7 @@ After helper function run:
 ```
 
 After build script run:
+
 ```
 "examplefunction67F55935": {
       "Type": "AWS::Lambda::Function",
@@ -85,6 +88,7 @@ After build script run:
 ```
 
 After CloudFormation deployment:
+
 ```
 "examplefunction67F55935": {
       "Type": "AWS::Lambda::Function",
@@ -98,11 +102,12 @@ After CloudFormation deployment:
 
 #### Template cleanup
 
-Cleans-up the parameters section and improves readability by removing the AssetParameter-style fields that would have 
-been used to specify Lambda source code properties. This allows solution-specific parameters to be highlighted and 
+Cleans-up the parameters section and improves readability by removing the AssetParameter-style fields that would have
+been used to specify Lambda source code properties. This allows solution-specific parameters to be highlighted and
 removes unnecessary clutter.
 
 Before:
+
 ```
 "Parameters": {
     "AssetParametersd513e93e266931de36e1c7e79c27b196f84ab928fce63d364d9152ca501551f7S3Bucket54E71A95": {
@@ -129,9 +134,10 @@ Before:
         "Type" : "String"
     }
   }
-  ```
+```
 
 After:
+
 ```
 "Parameters": {
     "CorsEnabled" : {
@@ -146,7 +152,8 @@ After:
         "Type" : "String"
     }
   }
-  ```
+```
 
-***
+---
+
 &copy; Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
