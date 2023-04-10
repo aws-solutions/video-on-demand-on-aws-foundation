@@ -167,7 +167,7 @@ export class VodFoundation extends cdk.Stack {
      * Custom Resource, Role and Policy.
      */
     const customResourceLambda = new lambda.Function(this, "CustomResource", {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: "index.handler",
       description:
         "CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint",
@@ -224,7 +224,7 @@ export class VodFoundation extends cdk.Stack {
      */
     const jobSubmit = new lambda.Function(this, "jobSubmit", {
       code: lambda.Code.fromAsset(`../job-submit`),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: "index.handler",
       timeout: cdk.Duration.seconds(30),
       retryAttempts: 0,
@@ -294,7 +294,7 @@ export class VodFoundation extends cdk.Stack {
      */
     const jobComplete = new lambda.Function(this, "JobComplete", {
       code: lambda.Code.fromAsset(`../job-complete`),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       handler: "index.handler",
       timeout: cdk.Duration.seconds(30),
       retryAttempts: 0,
