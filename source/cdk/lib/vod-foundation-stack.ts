@@ -30,7 +30,7 @@ export class VodFoundation extends cdk.Stack {
       // NOSONAR
       mapping: {
         AnonymousUsage: {
-          Data: "Yes",
+          Data: "No",
         },
       },
     });
