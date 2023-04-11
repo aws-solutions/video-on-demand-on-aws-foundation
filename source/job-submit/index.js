@@ -4,6 +4,7 @@
  */
 const uuidv4 = require("uuid/v4");
 const utils = require("./lib/utils.js");
+const AWS = require("aws-sdk");
 
 exports.handler = async (event, context) => {
   console.log(context.LogGroupName);
@@ -18,9 +19,27 @@ exports.handler = async (event, context) => {
     SNS_TOPIC_ARN,
   } = process.env;
 
+  /**
+   * Get the metadata of the s3 object.
+   *
+   * In order for the stack to work correctly, the source video must have the following user-defined metadata:
+   * - "app-id": the id of the app associated with the interview recording
+   * - "workspace": the relevant workspace for the interview recording
+   *
+   * If these are present, the job-complete lambda will update the relevant interview recording object
+   * in Rails with the URL of the processed video.
+   */
+  const s3 = new AWS.S3();
+  const params = {
+    Bucket: event.Records[0].s3.bucket.name,
+    Key: event.Records[0].s3.object.key,
+  };
+  const data = await s3.headObject(params).promise();
+  const videoMetadata = !data ? null : data.Metadata;
+
   try {
     /**
-     * define inputs/ouputs and a unique string for the mediaconver output path in S3.
+     * define inputs/ouputs and a unique string for the mediaconvert output path in S3.
      */
     console.log(event);
     const srcVideo = decodeURIComponent(
@@ -35,6 +54,7 @@ exports.handler = async (event, context) => {
       Guid: guid,
       StackName: STACKNAME,
       SolutionId: SOLUTION_ID,
+      ...videoMetadata,
     };
     /**
      * download and validate settings
