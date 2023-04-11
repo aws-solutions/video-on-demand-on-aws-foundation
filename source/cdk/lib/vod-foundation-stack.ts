@@ -2,7 +2,6 @@ import * as cdk from "@aws-cdk/core";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as iam from "@aws-cdk/aws-iam";
 import * as lambda from "@aws-cdk/aws-lambda";
-import * as subs from "@aws-cdk/aws-sns-subscriptions";
 import { HttpMethods } from "@aws-cdk/aws-s3";
 import * as appreg from "@aws-cdk/aws-servicecatalogappregistry";
 import * as applicationinsights from "@aws-cdk/aws-applicationinsights";
@@ -11,7 +10,6 @@ import * as applicationinsights from "@aws-cdk/aws-applicationinsights";
  */
 import { CloudFrontToS3 } from "@aws-solutions-constructs/aws-cloudfront-s3";
 import { EventsRuleToLambda } from "@aws-solutions-constructs/aws-events-rule-lambda";
-import { LambdaToSns } from "@aws-solutions-constructs/aws-lambda-sns";
 
 export class VodFoundation extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -227,7 +225,6 @@ export class VodFoundation extends cdk.Stack {
         SOLUTION_ID: "SO0146",
         STACKNAME: cdk.Aws.STACK_NAME,
         SOLUTION_IDENTIFIER: "AwsSolution/SO0146/v1.1.0",
-        /** SNS_TOPIC_ARN: added by the solution construct below */
       },
       initialPolicy: [
         new iam.PolicyStatement({
@@ -278,9 +275,8 @@ export class VodFoundation extends cdk.Stack {
     /**
      * Process outputs lambda function, invoked by CloudWatch events for MediaConvert.
      * Parses the CW event outputs, creates the CloudFront URLs for the outputs, updates
-     * a manifest file in the destination bucket and send an SNS notfication.
-     * Enviroment variables for the destination bucket and SNS topic are added by the
-     *  solutions constructs
+     * a manifest file in the destination bucket and send a Slack notification.
+     * Environment variables for the destination bucket are added by the solutions constructs
      */
     const jobComplete = new lambda.Function(this, "JobComplete", {
       code: lambda.Code.fromAsset(`../job-complete`),
@@ -294,7 +290,6 @@ export class VodFoundation extends cdk.Stack {
         MEDIACONVERT_ENDPOINT: customResourceEndpoint.getAttString("Endpoint"),
         CLOUDFRONT_DOMAIN:
           cloudFront.cloudFrontWebDistribution.distributionDomainName,
-        /** SNS_TOPIC_ARN: added by the solution construct below */
         SOURCE_BUCKET: source.bucketName,
         JOB_MANIFEST: "jobs-manifest.json",
         STACKNAME: cdk.Aws.STACK_NAME,
@@ -372,27 +367,6 @@ export class VodFoundation extends cdk.Stack {
       },
     });
     /**
-     * Solutions construct, creates an SNS topic and a Lambda function  with permission
-     * to publish messages to the topic. Also adds the SNS topic to the lambda Environment
-     * variables
-     */
-    const snsTopic = new LambdaToSns(this, "Notification", {
-      existingLambdaObj: jobSubmit,
-    });
-    new LambdaToSns(this, "CompleteSNS", {
-      // NOSONAR
-      existingLambdaObj: jobComplete,
-      existingTopicObj: snsTopic.snsTopic,
-    });
-    /**
-     * Subscribe the slack notification email address to the SNS topic created by the construct.
-     */
-    snsTopic.snsTopic.addSubscription(
-      new subs.UrlSubscription(
-        "https://hooks.slack.com/workflows/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"
-      )
-    );
-    /**
      * AppRegistry
      */
     const applicationName = `vod-foundation-${cdk.Aws.STACK_NAME}`;
@@ -461,13 +435,6 @@ export class VodFoundation extends cdk.Stack {
       value: cloudFront.cloudFrontWebDistribution.distributionDomainName,
       description: "CloudFront Domain Name",
       exportName: `${cdk.Aws.STACK_NAME}-CloudFrontDomain`,
-    });
-    new cdk.CfnOutput(this, "SnsTopic", {
-      // NOSONAR
-      value: snsTopic.snsTopic.topicName,
-      description:
-        "SNS Topic used to capture the VOD workflow outputs including errors",
-      exportName: `${cdk.Aws.STACK_NAME}-SnsTopic`,
     });
   }
 }

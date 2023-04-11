@@ -10,10 +10,8 @@ exports.handler = async (event) => {
   const {
     MEDIACONVERT_ENDPOINT,
     CLOUDFRONT_DOMAIN,
-    SNS_TOPIC_ARN,
     SOURCE_BUCKET,
     JOB_MANIFEST,
-    STACKNAME,
     METRICS,
     SOLUTION_ID,
     VERSION,
@@ -59,9 +57,13 @@ exports.handler = async (event) => {
             await utils.sendMetrics(SOLUTION_ID, VERSION, UUID, results);
           }
           /**
-           * send a summary of the job to sns
+           * send a summary of the job to slack
            */
-          await utils.sendSns(SNS_TOPIC_ARN, STACKNAME, status, results);
+          await utils.sendSlack(status, results);
+          /**
+           * send a summary of the job to SQS where it's picked up by a sidekiq worker to update the rails app
+           */
+          // TODO
         } catch (err) {
           throw err;
         }
@@ -69,10 +71,10 @@ exports.handler = async (event) => {
       case "CANCELED":
       case "ERROR":
         /**
-         * Send error to SNS
+         * Send error to Slack
          */
         try {
-          await utils.sendSns(SNS_TOPIC_ARN, STACKNAME, status, event);
+          await utils.sendSlack(status, event);
         } catch (err) {
           throw err;
         }
@@ -81,7 +83,7 @@ exports.handler = async (event) => {
         throw new Error("Unknow job status");
     }
   } catch (err) {
-    await utils.sendSns(SNS_TOPIC_ARN, STACKNAME, "PROCESSING ERROR", err);
+    await utils.sendSlack("PROCESSING ERROR", err);
     throw err;
   }
   return;

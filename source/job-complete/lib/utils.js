@@ -6,6 +6,9 @@ const AWS = require("aws-sdk");
 const axios = require("axios");
 const moment = require("moment");
 
+const slackWebhook =
+  "https://hooks.slack.com/services/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";
+
 /**
  * Download Job Manifest file from s3 and update the source file info
  */
@@ -147,15 +150,11 @@ const processJobDetails = async (endpoint, cloudfrontUrl, data) => {
 };
 
 /**
- * Send An sns notification for any failed jobs
+ * Send a Slack notification for any failed jobs
  */
-const sendSns = async (topic, stackName, status, data) => {
-  const sns = new AWS.SNS({
-    region: process.env.REGION,
-  });
+const sendSlack = async (status, data) => {
   try {
     let id, msg;
-
     switch (status) {
       case "COMPLETE":
         /**
@@ -165,7 +164,6 @@ const sendSns = async (topic, stackName, status, data) => {
         msg = {
           Id: data.Id,
           InputFile: data.InputFile,
-          InputDetails: data.InputDetails,
           Outputs: data.Outputs,
         };
         break;
@@ -188,14 +186,17 @@ const sendSns = async (topic, stackName, status, data) => {
         msg = data;
         break;
     }
-    console.log(`Sending ${status} SNS notification ${id}`);
-    await sns
-      .publish({
-        TargetArn: topic,
-        Message: JSON.stringify(msg, null, 2),
-        Subject: `${stackName}: Job ${status} id:${id}`,
-      })
-      .promise();
+    /**
+     * Send Slack notification
+     */
+    console.log(`Sending ${status} Slack notification ${id}`);
+    const response = await axios.post(slackWebhook, {
+      text: JSON.stringify(msg, null, 2),
+      username: "Video Processing Stack",
+      channel: "#sandbox-invalidators",
+      icon_emoji: ":robot_face:",
+    });
+    console.log("Slack message sent:", response.data);
   } catch (err) {
     console.error(err);
     throw err;
@@ -259,6 +260,6 @@ const sendMetrics = async (solutionId, version, uuid, results) => {
 module.exports = {
   writeManifest: writeManifest,
   processJobDetails: processJobDetails,
-  sendSns: sendSns,
+  sendSlack: sendSlack,
   sendMetrics: sendMetrics,
 };

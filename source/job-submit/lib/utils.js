@@ -166,25 +166,24 @@ const createJob = async (job, endpoint) => {
 };
 
 /**
- * Send An sns notification for any failed jobs
+ * Send a Slack notification for any failed jobs
  */
-const sendError = async (topic, stackName, logGroupName, err) => {
-  console.log(`Sending SNS error notification: ${err}`);
-  const sns = new AWS.SNS({
-    region: process.env.REGION,
-  });
+const sendError = async (logGroupName, err) => {
+  console.log(`Sending Slack error notification: ${err}`);
+
   try {
     const msg = {
       Details: `https://console.aws.amazon.com/cloudwatch/home?region=${process.env.AWS_REGION}#logStream:group=${logGroupName}`,
       Error: err,
     };
-    await sns
-      .publish({
-        TargetArn: topic,
-        Message: JSON.stringify(msg, null, 2),
-        Subject: `${stackName}: Encoding Job Submit Failed`,
-      })
-      .promise();
+
+    const response = await axios.post(slackWebhook, {
+      text: JSON.stringify(msg, null, 2),
+      username: "Video Processing Stack",
+      channel: "#sandbox-invalidators",
+      icon_emoji: ":robot_face:",
+    });
+    console.log("Slack message sent:", response.data);
   } catch (err) {
     console.error(err);
     throw err;

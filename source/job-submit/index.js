@@ -16,7 +16,6 @@ exports.handler = async (event, context) => {
     DESTINATION_BUCKET,
     SOLUTION_ID,
     STACKNAME,
-    SNS_TOPIC_ARN,
   } = process.env;
 
   /**
@@ -76,9 +75,9 @@ exports.handler = async (event, context) => {
     await utils.createJob(job, MEDIACONVERT_ENDPOINT);
   } catch (err) {
     /**
-     * Send SNS error message
+     * Send Slack error message
      */
-    await utils.sendError(SNS_TOPIC_ARN, STACKNAME, context.logGroupName, err);
+    await utils.sendError(context.logGroupName, err);
     throw err;
   }
   return;
