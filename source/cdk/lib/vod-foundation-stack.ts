@@ -17,7 +17,7 @@ export class VodFoundation extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     /**
-     * CloudFormation Template Descrption
+     * CloudFormation Template Description
      */
     const solutionId = "SO0146";
     const solutionName = "Video on Demand on AWS Foundation";
@@ -33,16 +33,6 @@ export class VodFoundation extends cdk.Stack {
           Data: "No",
         },
       },
-    });
-    /**
-     * Cfn Parameters
-     */
-    const adminEmail = new cdk.CfnParameter(this, "emailAddress", {
-      type: "String",
-      description:
-        "The admin email address to receive SNS notifications for job status.",
-      allowedPattern:
-        "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
     });
     /**
      * Logs bucket for S3 and CloudFront
@@ -383,8 +373,8 @@ export class VodFoundation extends cdk.Stack {
     });
     /**
      * Solutions construct, creates an SNS topic and a Lambda function  with permission
-     * to publish messages to the topic. Also adds the SNS topic to the lambda Enviroment
-     * varribles
+     * to publish messages to the topic. Also adds the SNS topic to the lambda Environment
+     * variables
      */
     const snsTopic = new LambdaToSns(this, "Notification", {
       existingLambdaObj: jobSubmit,
@@ -395,12 +385,13 @@ export class VodFoundation extends cdk.Stack {
       existingTopicObj: snsTopic.snsTopic,
     });
     /**
-     * Subscribe the admin email address to the SNS topic created but the construct.
+     * Subscribe the slack notification email address to the SNS topic created by the construct.
      */
     snsTopic.snsTopic.addSubscription(
-      new subs.EmailSubscription(adminEmail.valueAsString)
+      new subs.UrlSubscription(
+        "https://hooks.slack.com/workflows/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"
+      )
     );
-
     /**
      * AppRegistry
      */
