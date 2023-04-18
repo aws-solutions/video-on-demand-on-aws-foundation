@@ -88,6 +88,18 @@ const putNotification = async (bucket,lambdaArn) => {
                             Key: {
                                 FilterRules: [{
                                     Name: 'suffix',
+                                    Value: '.wmv'
+                                }]
+                            }
+                        }
+                    },
+                    {
+                        Events: ['s3:ObjectCreated:*'],
+                        LambdaFunctionArn: lambdaArn,
+                        Filter: {
+                            Key: {
+                                FilterRules: [{
+                                    Name: 'suffix',
                                     Value: '.mov'
                                 }]
                             }
