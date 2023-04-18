@@ -22,7 +22,7 @@ export class VodFoundation extends cdk.Stack {
          */
         const solutionId = 'SO0146'
         const solutionName = 'Video on Demand on AWS Foundation'
-        this.templateOptions.description = '(SO0146) v1.2.0: Video on Demand on AWS Foundation Solution Implementation';
+        this.templateOptions.description = '(SO0146) %%VERSION%%: Video on Demand on AWS Foundation Solution Implementation';
         /**
          * Mapping for sending anonymous metrics to AWS Solution Builders API
          */
@@ -48,6 +48,7 @@ export class VodFoundation extends cdk.Stack {
             encryption: s3.BucketEncryption.S3_MANAGED,
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            objectOwnership: s3.ObjectOwnership.OBJECT_WRITER
         });
         /**
          * Get Cfn Resource for the logs bucket and add CFN_NAG rule
@@ -125,6 +126,9 @@ export class VodFoundation extends cdk.Stack {
                     bucket: logsBucket,
                     prefix: 'cloudfront-logs'
                 }
+            },
+            cloudFrontLoggingBucketProps: {
+                objectOwnership: s3.ObjectOwnership.OBJECT_WRITER
             }
         });
         /**
