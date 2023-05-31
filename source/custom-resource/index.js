@@ -2,7 +2,7 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4} = require('uuid');
 const mediaconvert = require('./lib/mediaconvert');
 const s3 = require('./lib/s3');
 const cfn = require('./lib/cfn');

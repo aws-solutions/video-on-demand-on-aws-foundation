@@ -13,44 +13,50 @@
 
 // Imports
 const fs = require('fs');
+const _regex = /[\w]*AssetParameters/g; //this regular express also takes into account lambda functions defined in nested stacks
 
 // Paths
 const global_s3_assets = '../global-s3-assets';
 
+const getAllAssetParameterKeys = (parameters) =>
+    Object.keys(parameters).filter((key) => key.search(_regex) > -1);
+
 // For each template in global_s3_assets ...
-fs.readdirSync(global_s3_assets).forEach(file => {
+fs.readdirSync(global_s3_assets).forEach((file) => {
     // Import and parse template file
     const raw_template = fs.readFileSync(`${global_s3_assets}/${file}`);
     let template = JSON.parse(raw_template);
 
     // Clean-up Lambda function code dependencies
-    const resources = (template.Resources) ? template.Resources : {};
+    const resources = template.Resources ? template.Resources : {};
     const lambdaFunctions = Object.keys(resources).filter(function (key) {
         return resources[key].Type === 'AWS::Lambda::Function';
     });
-
     lambdaFunctions.forEach(function (f) {
-        const fn = template.Resources[f];
+        const fn = resources[f];
         if (fn.Properties.Code.hasOwnProperty('S3Bucket')) {
             // Set the S3 key reference
-            let artifactHash = Object.assign(fn.Properties.Code.S3Bucket.Ref);
-            artifactHash = artifactHash.replace('AssetParameters', '');
-            artifactHash = artifactHash.substring(0, artifactHash.indexOf('S3Bucket'));
+            let artifactHash = Object.assign(fn.Properties.Code.S3Key);
+            artifactHash = artifactHash.replace(_regex, '');
+            artifactHash = artifactHash.substring(
+                0,
+                artifactHash.indexOf('.zip')
+            );
             const assetPath = `asset${artifactHash}`;
             fn.Properties.Code.S3Key = `%%SOLUTION_NAME%%/%%VERSION%%/${assetPath}.zip`;
-
             // Set the S3 bucket reference
             fn.Properties.Code.S3Bucket = {
-                'Fn::Sub': '%%BUCKET_NAME%%-${AWS::Region}'
+                'Fn::Sub': '%%BUCKET_NAME%%-${AWS::Region}',
             };
+            // Set the handler
+            const handler = fn.Properties.Handler;
+            fn.Properties.Handler = `${assetPath}/${handler}`;
         }
     });
 
     // Clean-up parameters section
-    const parameters = (template.Parameters) ? template.Parameters : {};
-    const assetParameters = Object.keys(parameters).filter(function (key) {
-        return key.includes('AssetParameters');
-    });
+    const parameters = template.Parameters ? template.Parameters : {};
+    const assetParameters = getAllAssetParameterKeys(parameters);
     assetParameters.forEach(function (a) {
         template.Parameters[a] = undefined;
     });

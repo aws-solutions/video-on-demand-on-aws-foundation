@@ -24,9 +24,6 @@
 [ "$DEBUG" == 'true' ] && set -x
 set -e
 
-# Important: CDK global version number
-cdk_version=1.63.0
-
 # Check to see if input has been provided:
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
     echo "Please provide all required parameters for the build script"
@@ -58,25 +55,23 @@ rm -rf $staging_dist_dir
 mkdir -p $staging_dist_dir
 
 echo "------------------------------------------------------------------------------"
-echo "[Init] Update local CDK CLI for building"
-echo "------------------------------------------------------------------------------"
-npm install -g aws-cdk@latest
-
-echo "------------------------------------------------------------------------------"
-echo "[Init] Install dependencies for the cdk-solution-helper"
-echo "------------------------------------------------------------------------------"
-cd $template_dir/cdk-solution-helper
-npm install --production
-
-echo "------------------------------------------------------------------------------"
 echo "[Synth] CDK Project"
 echo "------------------------------------------------------------------------------"
-# Make sure user has the newest CDK version
-npm uninstall -g aws-cdk && npm install -g aws-cdk@1
 
 cd $source_dir/cdk
 npm install
-cdk synth --output=$staging_dist_dir
+
+npm run cdk -- context --clear
+npm run synth -- --output=$staging_dist_dir
+
+if [ $? -ne 0 ]
+then
+    echo "******************************************************************************"
+    echo "cdk-nag found errors"
+    echo "******************************************************************************"
+    exit 1
+fi
+
 cd $staging_dist_dir
 rm tree.json manifest.json cdk.out
 

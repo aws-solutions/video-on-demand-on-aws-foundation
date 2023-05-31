@@ -142,7 +142,11 @@ const validSettings = {
 const inValidSettings = {
     "Role": "",
     "Settings": {
-        "OutputGroups": [],
+        "OutputGroups": [{
+            OutputGroupSettings: {
+                Type: "invalid",
+            }
+        }],
         "Inputs": [
             {
                 "FileInput": "s3://sourcebucket/assets01/test.mp4"
@@ -189,6 +193,7 @@ describe('Utils GetJobSettings',() => {
         });
         await utils.getJobSettings().catch(err => {
             expect(err.Error.toString()).toEqual('GET FAILED')
+            expect(err.message).toEqual('Failed to download and validate the job-settings.json file. Please check its contents and location. Details  on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations');
         });
     });
 });
@@ -200,7 +205,8 @@ describe('Utils UpdateJobSettings',() => {
     });
     it('UpdateJobSettings Failed test', async () => {
         await utils.updateJobSettings(inValidSettings,'inputPath','outputPath',{},'role').catch(err => {
-            expect(err.toString()).toEqual("Error: 'OutputGroupSettings.Type is not a valid type. Please check/test your job settings file.'");
+            expect(err.toString()).toEqual("Error: Failed to update the job-settings.json file. Details on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations");
+            expect(err.Error).toEqual('Error: OutputGroupSettings.Type is not a valid type. Please check your job settings file.');
         });
     });
 });

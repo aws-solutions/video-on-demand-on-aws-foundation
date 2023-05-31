@@ -94,6 +94,8 @@ describe("Utils WriteManifest", () => {
     });
     await utils.writeManifest("bucket", "manifestFile", "data").catch((err) => {
       expect(err.Error.toString()).toEqual("GET FAILED");
+      expect(err.message).toEqual('Failed to update the jobs-manifest.json, please check its accessible in the root of the source S3 bucket');
+      expect(err.Job).toEqual('data');;
     });
   });
 });

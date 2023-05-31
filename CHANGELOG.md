@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2023-6-1
+### Added
+- cdk-nag rule suppressions
+- Updated deployment/build-s3-dist.sh to output cdk nag errors
+- Added CloudWatch logs permissions to CustomResource component in cdk
+
+### Changed
+- Upgraded to cdk v2
+- Added region name and account ID to AppRegistry Application name
+- Changed AppRegistry Attribute Group name to Region-StackName
+- Updated AppRegistry attribute and tag names
+- Upgraded Lambda runtimes to node 16
+- Removed application insights
+- Use logs bucket for cloudfront distribution logging
+
 ## [1.2.1] - 2023-4-17
 ### Changed
 - Updated object ownership configuration on Logs bucket and CloudFront Logging bucket
@@ -14,8 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Application Insights in AppRegistry
 - SonarQube properties file: sonar-project.properties
 - Added unit tests with 80% code coverage
+
 ### Changed
 - Changed deployment/run-unit-tests.sh to generate unit test coverage reports
+
 ### Contributors
 * @sandimciin
 * @eggoynes
@@ -39,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Contributors
 * @eggoynes
+
 ## [1.0.0] - 2020-11-05
 ### Added
 - All files, initial version

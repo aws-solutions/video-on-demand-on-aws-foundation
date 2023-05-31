@@ -2,7 +2,7 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-const uuidv4 = require('uuid/v4');
+const { v4: uuidv4} = require('uuid');
 const utils = require('./lib/utils.js');
 
 exports.handler = async (event,context) => {

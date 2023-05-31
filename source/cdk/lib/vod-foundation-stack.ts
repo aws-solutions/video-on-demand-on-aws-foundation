@@ -1,21 +1,22 @@
-import * as cdk from '@aws-cdk/core';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import { HttpMethods } from '@aws-cdk/aws-s3';
-import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
-import * as applicationinsights from '@aws-cdk/aws-applicationinsights';
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import { HttpMethods } from 'aws-cdk-lib/aws-s3';
+import * as appreg from '@aws-cdk/aws-servicecatalogappregistry-alpha';
+import { NagSuppressions } from 'cdk-nag';
+import { Construct } from 'constructs';
 /**
  * AWS Solution Constructs: https://docs.aws.amazon.com/solutions/latest/constructs/
  */
 import { CloudFrontToS3 } from '@aws-solutions-constructs/aws-cloudfront-s3';
-import { EventsRuleToLambda } from '@aws-solutions-constructs/aws-events-rule-lambda';
+import { EventbridgeToLambda } from '@aws-solutions-constructs/aws-eventbridge-lambda';
 import { LambdaToSns } from '@aws-solutions-constructs/aws-lambda-sns';
 
 
 export class VodFoundation extends cdk.Stack {
-    constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+    constructor(scope: Construct, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
         /**
          * CloudFormation Template Descrption
@@ -24,11 +25,11 @@ export class VodFoundation extends cdk.Stack {
         const solutionName = 'Video on Demand on AWS Foundation'
         this.templateOptions.description = '(SO0146) %%VERSION%%: Video on Demand on AWS Foundation Solution Implementation';
         /**
-         * Mapping for sending anonymous metrics to AWS Solution Builders API
+         * Mapping for sending anonymized metrics to AWS Solution Builders API
          */
         new cdk.CfnMapping(this, 'Send', { // NOSONAR
             mapping: {
-                AnonymousUsage: {
+                AnonymizedUsage: {
                     Data: 'Yes'
                 }
             }
@@ -48,7 +49,9 @@ export class VodFoundation extends cdk.Stack {
             encryption: s3.BucketEncryption.S3_MANAGED,
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-            objectOwnership: s3.ObjectOwnership.OBJECT_WRITER
+            objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+            enforceSSL: true,
+            versioned: true
         });
         /**
          * Get Cfn Resource for the logs bucket and add CFN_NAG rule
@@ -65,6 +68,19 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            logsBucket,
+            [
+                {
+                    id: 'AwsSolutions-S1', //same as cfn_nag rule W35
+                    reason: 'Used to store access logs for other buckets'
+                }, {
+                    id: 'AwsSolutions-S10',
+                    reason: 'Bucket is private and is not using HTTP'
+                }
+            ]
+        );
         /**
          * Source S3 bucket to host source videos and jobSettings JSON files
         */
@@ -74,6 +90,8 @@ export class VodFoundation extends cdk.Stack {
             encryption: s3.BucketEncryption.S3_MANAGED,
             publicReadAccess: false,
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+            enforceSSL: true,
+            versioned: true
         });
         const cfnSource = source.node.findChild('Resource') as s3.CfnBucket;
         cfnSource.cfnOptions.metadata = {
@@ -84,6 +102,16 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            source,
+            [
+                {
+                    id: 'AwsSolutions-S10',
+                    reason: 'Bucket is private and is not using HTTP'
+                }
+            ]
+        );
         /**
          * Destination S3 bucket to host the mediaconvert outputs
         */
@@ -95,13 +123,25 @@ export class VodFoundation extends cdk.Stack {
             blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
             cors: [
                 {
-                  maxAge: 3000,
-                  allowedOrigins: ['*'],
-                  allowedHeaders: ['*'],
-                  allowedMethods: [HttpMethods.GET]
+                    maxAge: 3000,
+                    allowedOrigins: ['*'],
+                    allowedHeaders: ['*'],
+                    allowedMethods: [HttpMethods.GET]
                 },
-              ],
+            ],
+            enforceSSL: true,
+            versioned: true
         });
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            destination,
+            [
+                {
+                    id: 'AwsSolutions-S10',
+                    reason: 'Bucket is private and is not using HTTP'
+                }
+            ]
+        );
         /**
          * Solutions construct to create Cloudfrotnt with an s3 bucket as the origin
          * https://docs.aws.amazon.com/solutions/latest/constructs/aws-cloudfront-s3.html
@@ -122,15 +162,44 @@ export class VodFoundation extends cdk.Stack {
                     },
                     viewerProtocolPolicy: 'allow-all'
                 },
-                loggingConfig: {
-                    bucket: logsBucket,
-                    prefix: 'cloudfront-logs'
-                }
-            },
-            cloudFrontLoggingBucketProps: {
-                objectOwnership: s3.ObjectOwnership.OBJECT_WRITER
+                logBucket: logsBucket,
+                logFilePrefix: 'cloudfront-logs/'
             }
         });
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            destination.policy!,
+            [
+                {
+                    id: 'AwsSolutions-S10',
+                    reason: 'Bucket is private and is not using HTTP'
+                }
+            ]
+        );
+        NagSuppressions.addResourceSuppressions(
+            cloudFront.cloudFrontWebDistribution,
+            [
+                {
+                    id: 'AwsSolutions-CFR1',
+                    reason: 'Use case does not warrant CloudFront Geo restriction'
+                }, {
+                    id: 'AwsSolutions-CFR2',
+                    reason: 'Use case does not warrant CloudFront integration with AWS WAF'
+                }, {
+                    id: 'AwsSolutions-CFR4', //same as cfn_nag rule W70
+                    reason: 'CloudFront automatically sets the security policy to TLSv1 when the distribution uses the CloudFront domain name'
+                }
+            ]
+        );
+        NagSuppressions.addResourceSuppressions(
+            cloudFront.cloudFrontLoggingBucket!,
+            [
+                {
+                    id: 'AwsSolutions-S1',
+                    reason: 'Used to store access logs for other buckets'
+                }
+            ]
+        );
         /**
          * MediaConvert Service Role to grant Mediaconvert Access to the source and Destination Bucket,
          * API invoke * is also required for the services.
@@ -151,29 +220,69 @@ export class VodFoundation extends cdk.Stack {
             ]
         });
         mediaconvertPolicy.attachToRole(mediaconvertRole);
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            mediaconvertPolicy,
+            [
+                {
+                    id: 'AwsSolutions-IAM5',
+                    reason: '/* required to get/put objects to S3'
+                }
+            ]
+        );
         /**
          * Custom Resource, Role and Policy.
          */
+        const customResourceRole = new iam.Role(this, 'CustomResourceRole', {
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+        });
+
+        const customResourcePolicy = new iam.Policy(this, 'CustomResourcePolicy', {
+            statements: [
+                new iam.PolicyStatement({
+                    actions: ["s3:PutObject","s3:PutBucketNotification"],
+					resources: [source.bucketArn, `${source.bucketArn}/*`]
+                }),
+                new iam.PolicyStatement({
+					actions: ["mediaconvert:DescribeEndpoints"],
+					resources: [`arn:aws:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`],
+				}),
+                new iam.PolicyStatement({
+                    actions: [
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    resources: ['*'],
+                })
+            ]
+        });
+        customResourcePolicy.attachToRole(customResourceRole);
+
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            customResourcePolicy,
+            [
+                {
+                    id: 'AwsSolutions-IAM5',
+                    reason: 'Resource ARNs are not generated at the time of policy creation'
+                }
+            ]
+        );
+
         const customResourceLambda = new lambda.Function(this, 'CustomResource', {
-            runtime: lambda.Runtime.NODEJS_12_X,
+            runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
             description: 'CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint',
             environment: {
-                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/%%VERSION%%'
             },
             code: lambda.Code.fromAsset('../custom-resource'),
             timeout: cdk.Duration.seconds(30),
-			initialPolicy: [
-				new iam.PolicyStatement({
-					actions: ["s3:PutObject","s3:PutBucketNotification"],
-					resources: [source.bucketArn, `${source.bucketArn}/*`]
-				}),
-				new iam.PolicyStatement({
-					actions: ["mediaconvert:DescribeEndpoints"],
-					resources: [`arn:aws:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`],
-				})
-			]
+			role: customResourceRole
         });
+        customResourceLambda.node.addDependency(customResourcePolicy);
+        customResourceLambda.node.addDependency(customResourceRole);
         /** get the cfn resource for the role and attach cfn_nag rule */
         const cfnCustomResource = customResourceLambda.node.findChild('Resource') as lambda.CfnFunction;
         cfnCustomResource.cfnOptions.metadata = {
@@ -192,6 +301,16 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            customResourceLambda,
+            [
+                {
+                    id: 'AwsSolutions-L1',
+                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
+                }
+            ]
+        );
         /**
          * Call the custom resource, this will return the MediaConvert endpoint and a UUID
         */
@@ -202,24 +321,11 @@ export class VodFoundation extends cdk.Stack {
         /**
          * Job submit Lambda function, triggered by S3 Put events in the source S3 bucket
         */
-        const jobSubmit = new lambda.Function(this, 'jobSubmit', {
-            code: lambda.Code.fromAsset(`../job-submit`),
-            runtime: lambda.Runtime.NODEJS_12_X,
-            handler: 'index.handler',
-            timeout: cdk.Duration.seconds(30),
-            retryAttempts:0,
-            description: 'Submits an Encoding job to MediaConvert',
-            environment: {
-                MEDIACONVERT_ENDPOINT: customResourceEndpoint.getAttString('Endpoint'),
-                MEDIACONVERT_ROLE: mediaconvertRole.roleArn,
-                JOB_SETTINGS: 'job-settings.json',
-                DESTINATION_BUCKET: destination.bucketName,
-                SOLUTION_ID: 'SO0146',
-                STACKNAME: cdk.Aws.STACK_NAME,
-                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
-                /** SNS_TOPIC_ARN: added by the solution construct below */
-            },
-            initialPolicy: [
+        const jobSubmitRole = new iam.Role(this, 'JobSubmitRole', {
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+        });
+        const jobSubmitPolicy = new iam.Policy(this, 'JobSubmitPolicy', {
+            statements: [
                 new iam.PolicyStatement({
                     actions: ["iam:PassRole"],
                     resources: [mediaconvertRole.roleArn]
@@ -232,8 +338,42 @@ export class VodFoundation extends cdk.Stack {
                     actions: ["s3:GetObject"],
                     resources: [source.bucketArn, `${source.bucketArn}/*`]
                 })
-			]
+            ]
         });
+        jobSubmitPolicy.attachToRole(jobSubmitRole);
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            jobSubmitPolicy,
+            [
+                {
+                    id: 'AwsSolutions-IAM5',
+                    reason: 'Resource ARNs are not generated at the time of policy creation'
+                }
+            ]
+        );
+
+        const jobSubmit = new lambda.Function(this, 'jobSubmit', {
+            code: lambda.Code.fromAsset(`../job-submit`),
+            runtime: lambda.Runtime.NODEJS_16_X,
+            handler: 'index.handler',
+            timeout: cdk.Duration.seconds(30),
+            retryAttempts:0,
+            description: 'Submits an Encoding job to MediaConvert',
+            environment: {
+                MEDIACONVERT_ENDPOINT: customResourceEndpoint.getAttString('Endpoint'),
+                MEDIACONVERT_ROLE: mediaconvertRole.roleArn,
+                JOB_SETTINGS: 'job-settings.json',
+                DESTINATION_BUCKET: destination.bucketName,
+                SOLUTION_ID: 'SO0146',
+                STACKNAME: cdk.Aws.STACK_NAME,
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/%%VERSION%%'
+                /** SNS_TOPIC_ARN: added by the solution construct below */
+            },
+            role: jobSubmitRole
+        });
+        jobSubmit.node.addDependency(jobSubmitPolicy);
+        jobSubmit.node.addDependency(jobSubmitRole);
+
         /** Give S3 permission to trigger the job submit lambda function  */
         jobSubmit.addPermission('S3Trigger', {
             principal: new iam.ServicePrincipal('s3.amazonaws.com'),
@@ -258,6 +398,16 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            jobSubmit,
+            [
+                {
+                    id: 'AwsSolutions-L1',
+                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
+                }
+            ]
+        );
         /**
          * Process outputs lambda function, invoked by CloudWatch events for MediaConvert.
          * Parses the CW event outputs, creates the CloudFront URLs for the outputs, updates
@@ -265,9 +415,36 @@ export class VodFoundation extends cdk.Stack {
          * Enviroment variables for the destination bucket and SNS topic are added by the
          *  solutions constructs
          */
+        const jobCompleteRole = new iam.Role(this, 'JobCompleteRole', {
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
+        });
+        const jobCompletePolicy = new iam.Policy(this, 'JobCompletePolicy', {
+            statements: [
+                new iam.PolicyStatement({
+                    actions: ["mediaconvert:GetJob"],
+                    resources: [`arn:${cdk.Aws.PARTITION}:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
+                }),
+                new iam.PolicyStatement({
+                    actions: ["s3:GetObject", "s3:PutObject"],
+                    resources: [`${source.bucketArn}/*`]
+                })
+            ]
+        });
+        jobCompletePolicy.attachToRole(jobCompleteRole);
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            jobCompletePolicy,
+            [
+                {
+                    id: 'AwsSolutions-IAM5',
+                    reason: 'Resource ARNs are not generated at the time of policy creation'
+                }
+            ]
+        );
+
         const jobComplete = new lambda.Function(this, 'JobComplete', {
             code: lambda.Code.fromAsset(`../job-complete`),
-            runtime: lambda.Runtime.NODEJS_12_X,
+            runtime: lambda.Runtime.NODEJS_16_X,
             handler: 'index.handler',
             timeout: cdk.Duration.seconds(30),
             retryAttempts:0,
@@ -279,23 +456,17 @@ export class VodFoundation extends cdk.Stack {
                 SOURCE_BUCKET: source.bucketName,
                 JOB_MANIFEST: 'jobs-manifest.json',
                 STACKNAME: cdk.Aws.STACK_NAME,
-                METRICS:  cdk.Fn.findInMap('Send', 'AnonymousUsage', 'Data'),
+                METRICS:  cdk.Fn.findInMap('Send', 'AnonymizedUsage', 'Data'),
                 SOLUTION_ID:'SO0146',
-                VERSION:'1.1.0',
+                VERSION:'%%VERSION%%',
                 UUID:customResourceEndpoint.getAttString('UUID'),
-                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/v1.1.0'
+                SOLUTION_IDENTIFIER: 'AwsSolution/SO0146/%%VERSION%%'
             },
-            initialPolicy: [
-                new iam.PolicyStatement({
-                    actions: ["mediaconvert:GetJob"],
-                    resources: [`arn:${cdk.Aws.PARTITION}:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
-                }),
-                new iam.PolicyStatement({
-                    actions: ["s3:GetObject", "s3:PutObject"],
-                    resources: [`${source.bucketArn}/*`]
-                })
-            ]
+            role: jobCompleteRole
         });
+        jobComplete.node.addDependency(jobCompletePolicy);
+        jobComplete.node.addDependency(jobCompleteRole);
+
         const cfnJobComplete = jobComplete.node.findChild('Resource') as lambda.CfnFunction;
         cfnJobComplete.cfnOptions.metadata = {
             cfn_nag: {
@@ -313,6 +484,16 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
+        //cdk_nag
+        NagSuppressions.addResourceSuppressions(
+            jobComplete,
+            [
+                {
+                    id: 'AwsSolutions-L1',
+                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
+                }
+            ]
+        );
         /**
          * Custom resource to configure the source S3 bucket; upload default job-settings file and 
          * enabble event notifications to trigger the job-submit lambda function
@@ -328,7 +509,7 @@ export class VodFoundation extends cdk.Stack {
          * Solution constructs, creates a CloudWatch event rule to trigger the process
          * outputs lambda functions.
          */
-        new EventsRuleToLambda(this, 'EventTrigger', { // NOSONAR
+        new EventbridgeToLambda(this, 'EventTrigger', { // NOSONAR
             existingLambdaObj: jobComplete,
             eventRuleProps: {
                 enabled: true,
@@ -370,9 +551,9 @@ export class VodFoundation extends cdk.Stack {
         /**
         * AppRegistry
         */
-        const applicationName = `vod-foundation-${cdk.Aws.STACK_NAME}`;
+        const applicationName = `vod-foundation-${cdk.Aws.REGION}-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.STACK_NAME}`;
         const attributeGroup = new appreg.AttributeGroup(this, 'AppRegistryAttributeGroup', {
-            attributeGroupName: cdk.Aws.STACK_NAME,
+            attributeGroupName: `${cdk.Aws.REGION}-${cdk.Aws.STACK_NAME}`,
             description: "Attribute group for solution information.",
             attributes: {
                 ApplicationType: 'AWS-Solutions',
@@ -385,24 +566,13 @@ export class VodFoundation extends cdk.Stack {
             applicationName: applicationName,
             description: `Service Catalog application to track and manage all your resources. The SolutionId is ${solutionId} and SolutionVersion is %%VERSION%%.`
         });
-        appRegistry.associateStack(this);
-        cdk.Tags.of(appRegistry).add('solutionId', solutionId);
-        cdk.Tags.of(appRegistry).add('SolutionName', solutionName);
-        cdk.Tags.of(appRegistry).add('SolutionDomain', 'CloudFoundations');
-        cdk.Tags.of(appRegistry).add('SolutionVersion', '%%VERSION%%');
-        cdk.Tags.of(appRegistry).add('appRegistryApplicationName', 'vod-foundation-stack');
-        cdk.Tags.of(appRegistry).add('ApplicationType', 'AWS-Solutions');
+        appRegistry.associateApplicationWithStack(this);
+        cdk.Tags.of(appRegistry).add('Solutions:SolutionID', solutionId);
+        cdk.Tags.of(appRegistry).add('Solutions:SolutionName', solutionName);
+        cdk.Tags.of(appRegistry).add('Solutions:SolutionVersion', '%%VERSION%%');
+        cdk.Tags.of(appRegistry).add('Solutions:ApplicationType', 'AWS-Solutions');
 
-        appRegistry.node.addDependency(attributeGroup);
-        appRegistry.associateAttributeGroup(attributeGroup);
-
-        const appInsights = new applicationinsights.CfnApplication(this, 'ApplicationInsightsApp', {
-            resourceGroupName: `AWS_AppRegistry_Application-${applicationName}`,
-            autoConfigurationEnabled: true,
-            cweMonitorEnabled: true,
-            opsCenterEnabled: true
-        });
-        appInsights.node.addDependency(appRegistry);
+        attributeGroup.associateWith(appRegistry);
         
         /**
          * Stack Outputs
