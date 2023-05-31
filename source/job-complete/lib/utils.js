@@ -58,11 +58,10 @@ const writeManifest = async (bucket, manifestFile,jobDetails) => {
             Body: JSON.stringify(manifest)
         }).promise();
     } catch (err) {
-        throw {
-            Message:'Failed to update the jobs-manifest.json, please check its accessible in the root of the source S3 bucket',
-            Error: err,
-            Job: jobDetails
-        };
+        const error = new Error('Failed to update the jobs-manifest.json, please check its accessible in the root of the source S3 bucket');
+        error.Error = err;
+        error.Job = jobDetails;
+        throw error;
     }
     return results;
 };

@@ -1,5 +1,11 @@
 {
   "name": "vod-foundation",
+  "description": "Synthesize templates for Video on Demand on AWS Foundation using AWS Cloud Development Kit (CDK).",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com/solutions"
+  },
   "version": "1.1.0",
   "bin": {
     "vod-foundation": "bin/vod-foundation.js"
@@ -8,29 +14,29 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest --coverage --updateSnapshot",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "synth": "cdk synth -q"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.173.0",
-    "@types/jest": "^26.0.10",
-    "@types/node": "10.17.27",
-    "aws-cdk": "^1.173.0",
-    "jest": "^26.6.3",
-    "ts-jest": "^26.5.6",
-    "ts-node": "^8.1.0",
-    "typescript": "^3.9.10"
+    "@aws-cdk/assert": "2.68.0",
+    "@types/jest": "^29.5.1",
+    "@types/node": "20.2.3",
+    "aws-cdk": "^2.77.0",
+    "aws-cdk-lib": "^2.77.0",
+    "constructs": "10.2.8",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.173.0",
-    "@aws-cdk/aws-s3": "1.173.0",
-    "@aws-cdk/aws-iam": "1.173.0",
-    "@aws-cdk/aws-lambda": "1.173.0",
-    "@aws-cdk/aws-servicecatalogappregistry": "1.173.0",
-    "@aws-cdk/aws-applicationinsights": "1.173.0",
-    "@aws-cdk/aws-sns-subscriptions": "1.173.0",
-    "@aws-solutions-constructs/aws-cloudfront-s3": "1.173.0",
-    "@aws-solutions-constructs/aws-events-rule-lambda": "1.173.0",
-    "@aws-solutions-constructs/aws-lambda-sns": "1.173.0",
+    "aws-cdk-lib": "2.77.0",
+    "constructs": "10.2.8",
+    "@aws-cdk/aws-servicecatalogappregistry-alpha": "2.77.0-alpha.0",
+    "@aws-solutions-constructs/aws-cloudfront-s3": "2.39.0",
+    "@aws-solutions-constructs/aws-eventbridge-lambda": "2.39.0",
+    "@aws-solutions-constructs/aws-lambda-sns": "2.39.0",
+    "cdk-nag": "^2.26.7",
     "source-map-support": "^0.5.16"
   }
 }

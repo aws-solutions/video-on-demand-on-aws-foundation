@@ -28,10 +28,9 @@ const getJobSettings = async (bucket, settingsFile) => {
             throw new Error('Invalid settings file in s3');
         }
     } catch (err) {
-        throw {
-            Message:'Failed to download and validate the job-settings.json file. Please check its contents and location. Details  on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations',
-            Error: err.toString()
-        };
+        const error = new Error('Failed to download and validate the job-settings.json file. Please check its contents and location. Details  on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations');
+        error.Error = err.toString();
+        throw error;
     }
     return settings;
 };
@@ -104,10 +103,9 @@ const updateJobSettings = async (job, inputPath, outputPath, metadata, role) => 
         */
         job.UserMetadata = {...job.UserMetadata, ...metadata};
     } catch (err) {
-        throw {
-            Message:'Failed to update the job-settings.json file. Details on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations',
-            Error: err.toString()
-        };
+        const error = new Error('Failed to update the job-settings.json file. Details on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations');
+        error.Error = err.toString();
+        throw error;
     }
     return job;
 };
