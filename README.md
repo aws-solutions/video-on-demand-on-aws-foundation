@@ -1,4 +1,9 @@
-# Video on Demand on AWS Foundation
+# Mesilinka Media Archives
+
+Combines the AWS VOD workflow with a Wordpress front end.  While videos get encoded, posts also get created directly in Wordpress.  Also adds photo capabilities.
+
+
+## (Forked from) Video on Demand on AWS Foundation
 
 How to implement a video-on-demand workflow on AWS leveraging AWS Lambda, AWS Elemental MediaConvert, Amazon s3 and Amazon CloudWatch. Source code for [Video on Demand on AWS Foundation](https://aws.amazon.com/solutions/video-on-demand-on-aws/) solution.
 
@@ -10,7 +15,6 @@ The AWS CloudFormation template deploys a workflow that ingests source videos, t
 The solution includes two AWS lambda functions: a job submit function to create the encoding jobs in MediaConvert and a job complete function to process the outputs. Amazon CloudWatch tracks encoding jobs in MediaConvert and triggers the Lambda job complete function. An Amazon SNS topic is deployed to send notifications of completed jobs, and Amazon CloudFront is configured with the destination S3 bucket as the origin for global distribution of the transcoded video content.
 
 For more detail including using your own settings file please see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html)
-
 
 
 ## Creating a custom build
