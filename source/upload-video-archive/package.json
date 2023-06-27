@@ -1,0 +1,11 @@
+{
+  "name": "upload-video-archive",
+  "version": "1.0.0",
+  "description": "Drop videos and a json in a S3, get posts on your Wordpress Site with transcoded videos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

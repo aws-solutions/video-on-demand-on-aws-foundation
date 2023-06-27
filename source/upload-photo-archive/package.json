@@ -1,0 +1,11 @@
+{
+  "name": "upload-photo-archive",
+  "version": "1.0.0",
+  "description": "Drop photos and a json in a S3, get posts on your Wordpress Site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
