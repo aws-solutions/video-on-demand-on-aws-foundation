@@ -14,6 +14,5 @@ AWS SDK under the Apache License Version 2.0
 AWS CDK under the Apache License Version 2.0
 axios under the Massachusetts Institute of Technology (MIT) license
 axios-mock-adapter under the Massachusetts Institute of Technology (MIT) license
-moment under the Massachusetts Institute of Technology (MIT) license
 uuid under the Massachusetts Institute of Technology (MIT) license
 jest under the Massachusetts Institute of Technology (MIT) license

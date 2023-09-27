@@ -1,48 +1,92 @@
 # Video on Demand on AWS Foundation
+_Deploy a customizable architecture to build a video-on-demand workflow._
 
-How to implement a video-on-demand workflow on AWS leveraging AWS Lambda, AWS Elemental MediaConvert, Amazon s3 and Amazon CloudWatch. Source code for [Video on Demand on AWS Foundation](https://aws.amazon.com/solutions/video-on-demand-on-aws/) solution.
+---
 
-## Architecture Overview
+## About this solution
+
+Video on Demand on AWS Foundation is a reference implementation that automatically provisions the Amazon Web Services (AWS) services necessary to build a scalable, distributed video-on-demand workflow.  
+
+## Solution overview
+
+We designed this solution to help you start encoding video files with AWS Elemental MediaConvert. You can customize and use this solution as the starting point to create a more complex workflow.
+
+Out of the box, this solution helps you to accomplish the following:
+
+- Automatically transcode videos uploaded to Amazon Simple Storage Service (Amazon S3) into formats suitable for playback on a wide range of devices.
+- Customize MediaConvert job settings by uploading your own file and using different job settings for different inputs.
+- Store transcoded files in a destination bucket and use Amazon CloudFront to deliver to end viewers.
+- Manage costs, view logs, implement patching, and run automation runbooks for this solution from a central location.
+
+In addition to the transcoded video, the outputs include input file metadata, job settings, and output details. These outputs are stored in a separate JSON file that can be used for further processing.
+
+### Benefits
+
+**Reference implementation** - Leverage this solution as a reference implementation to automatically provision the AWS services necessary to build a scalable, distributed video-on-demand workflow.
+
+**Customization** - Customize this solution and then use it as the starting point to create a more complex workflow. 
+
+### Use cases
+
+**Streaming media** - As consumer demand for video streaming increases, media and entertainment companies are looking for secure and reliable web-based video streaming alternatives to traditional television. This solution automatically provisions the services necessary to build a scalable, distributed architecture that ingests, stores, processes, and delivers video content. Using this solution, you can avoid inefficient trial-and-error approaches, and save on time and costs for your streaming media projects.
+
+**Educational content delivery** - Professional development and educational initiatives create incentives and can be important revenue generators for nonprofit organizations. This solution can help you create modern, scalable content delivery and learning management systems to support your membership and programming offerings. The solution streamlines the processes for delivering online training and learning content.
+
+
+## Architecture overview
+
+
+### Architecture reference diagram
+
+Deploying this solution with the default parameters deploys the following components in your AWS account.
 ![Architecture](architecture.png)
 
-The AWS CloudFormation template deploys a workflow that ingests source videos, transcodes the videos into multiple Adaptive Bitrate Formats (ABR) and delivers the content through Amazon CloudFront. The solution creates a source Amazon S3 bucket to store the source video files, and a destination bucket to store the outputs from AWS Elemental MediaConvert. A  job-settings.json file, used to define the encoding settings for MediaConvert, is uploaded to the source S3 bucket.
+## Prerequisites
 
-The solution includes two AWS lambda functions: a job submit function to create the encoding jobs in MediaConvert and a job complete function to process the outputs. Amazon CloudWatch tracks encoding jobs in MediaConvert and triggers the Lambda job complete function. An Amazon SNS topic is deployed to send notifications of completed jobs, and Amazon CloudFront is configured with the destination S3 bucket as the origin for global distribution of the transcoded video content.
+* [AWS Command Line Interface](https://aws.amazon.com/cli/)
+* Node.js 18.x or later
+* aws-cdk version 2.93.0
 
-For more detail including using your own settings file please see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html)
+## How to deploy the solution
 
+1. Sign in to the AWS Management Console and launch the `video-on-demand-on-aws-foundation.template` CloudFormation template, which is available on the solution home page: [Video on Demand on AWS](https://aws.amazon.com/solutions/video-on-demand-on-aws/).
+2. The template launches in the US East (N. Virginia) Region by default. To launch the solution in a different AWS Region, use the Region selector in the console navigation bar. 
 
+For more detailed instructions, see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html).
+
+### Solution resources, post deployment
+
+* Source S3 bucket to store the source video files. The solution uploads a `job-settings.json` file, used to define the encoding settings for MediaConvert, to the source S3 bucket.
+* Destination S3 bucket to store the outputs from MediaConvert.
+* Job submit AWS Lambda function to create the encoding jobs in MediaConvert. 
+* Job complete Lambda function to process the outputs. 
+* Amazon CloudWatch to track encoding jobs in MediaConvert and invoke the Lambda job complete function. 
+* An Amazon SNS topic to send notifications of completed jobs.
+* Amazon CloudFront configured with the destination S3 bucket as the origin for global distribution of the transcoded video content.
 
 ## Creating a custom build
-The solution can be deployed through the CloudFormation template available on the solution home page: [Video on Demand on AWS](https://aws.amazon.com/solutions/video-on-demand-on-aws/).
 
-The solution was developed using the [AWS Cloud Development Kit (CDK)](https://docs.aws.amazon.com/cdk/latest/guide/home.html) and leverage 3 of the [AWS Solutions Constructs](https://docs.aws.amazon.com/solutions/latest/constructs/welcome.html). To make changes to the solution, download or clone this repo, update the source code and then either deploy the solution using the CDK or run the deployment/build-s3-dist.sh script. The build script will generate the CloudFormation template from the CDK source code using cdk synth, run deployment/cdk-solution-helper to update the template to pull the lambda source code from S3 and package the Lambda code ready to be deployed to an Amazon S3 bucket in your account.  
+We developed this solution using the AWS Cloud Development Kit (CDK) and leveraging three of the [AWS Solutions Constructs](https://docs.aws.amazon.com/solutions/latest/constructs/welcome.html). To make changes to the solution: 
 
-For details on deploying the solution using the CDK see the [CDK Getting Started guide](https://docs.aws.amazon.com/cdk/latest/guide/hello_world.html)
+1. Download or clone this repo.
+1. Update the source code. 
+1. Either deploy the solution using the CDK or run the `deployment/build-s3-dist.sh` script. The build script: 
+a. Generates the CloudFormation template from the CDK source code using cdk synth. 
+b. Runs `deployment/cdk-solution-helper` to update the template so that it pulls the Lambda source code from Amazon S3.
+c. Packages the Lambda code ready to be deployed to an Amazon S3 bucket in your account.  
 
+For details on deploying the solution using the CDK see the [CDK Getting Started guide](https://docs.aws.amazon.com/cdk/latest/guide/hello_world.html).
 
-### Prerequisites:
-* [AWS Command Line Interface](https://aws.amazon.com/cli/)
-* Node.js 12.x or later
-* aws-cdk version 1.63.0
-
-
-### 1. Running unit tests for customization
-Run unit tests to make sure added customization passes the tests:
+### 1. Run unit tests for customization
+Run unit tests to ensure that your added customization passes the tests:
 ```
-cd source/custom-resource
-npm install
-cd ../job-submit
-npm install
-
-# Then go back to deployment directory
-cd ../../deployment
+cd deployment
 chmod +x ./run-unit-tests.sh
 ./run-unit-tests.sh
 ```
 
-### 2. Create an Amazon S3 Bucket
-The CloudFormation template is configured to pull the Lambda deployment packages from Amazon S3 bucket in the region the template is being launched in. Create a bucket in the desired region with the region name appended to the name of the bucket (e.g. for us-east-1 create a bucket named ```my-bucket-us-east-1```).
+### 2. Create an S3 bucket
+We configured the CloudFormation template to pull the Lambda deployment packages from an S3 bucket in the Region the template is being launched in. Create a bucket in the desired Region and append the Region name to the bucket name (for example, ```my-bucket-us-east-1```).
 ```
 aws s3 mb s3://my-bucket-us-east-1
 ```
@@ -54,31 +98,45 @@ chmod +x ./build-s3-dist.sh
 ./build-s3-dist.sh my-bucket video-on-demand-on-aws-foundation v1.2.0
 ```
 
-> **Notes**: The _build-s3-dist_ script expects the bucket name as one of its parameters, and this value should not include the region suffix.
+> **Note:** The `_build-s3-dist_ script` expects the bucket name as one of its parameters, and this value should not include the Region suffix.
 
-Deploy the distributable to the Amazon S3 bucket in your account:
+Deploy the distributable to the S3 bucket in your account:
 ```
 aws s3 cp ./regional-s3-assets/ s3://my-bucket-us-east-1/video-on-demand-on-aws-foundation/v1.2.0/ --recursive --acl bucket-owner-full-control
 ```
 
-### 4. Launch the CloudFormation template.
-* Deploy the cloudFormation template from deployment/global-assets/video-on-demand-on-aws-foundation.template into the same region as you newly created S3 bucket.
+### 4. Launch the CloudFormation template
+Deploy the CloudFormation template from `deployment/global-assets/video-on-demand-on-aws-foundation.template` into the same Region as your newly created S3 bucket.
 
 
-***
+## Troubleshooting
+
+The email address you provided when deploying this solution receives notifications both when MediaConvert jobs complete successfully and when they fail. The email address also receives notifications about errors that might have occurred while trying to submit a job or process the output from a job. 
+
+If you’re notified about a MediaConvert job failure, complete the following steps.
+1.	From the main account where the solution is deployed, sign in to the AWS Elemental MediaConvert console. 
+2.	In the navigation pane, select **Jobs**.
+3.	Select the **job ID** of the job that failed. 
+4.	On the **Job Summary** page, review the **Overview** section for an error message with more information on why the job failed. On this page, you can also find MediaConvert error codes for details on how to address the issue. 
+
+If the error is not a MediaConvert job failure, possibly one of the two Lambda functions, `job_submit` or `job_complete`, encountered an error. The email you received has an `ErrorDetails` link that takes you directly to the CloudWatch logs generated by the failed function. The logs have additional details on why it failed. 
+
+> **Note:** When overriding the sample job-settings.json, we recommend exporting job settings from a MediaConvert job that’s successfully completed. Incorrect encoding settings will result in the job_submit Lambda function to fail.
+
+## How to uninstall the solution
+
+You can uninstall this solution from the AWS Management Console or by using the AWS CLI. You must manually delete the S3 buckets and CloudWatch logs created by this solution. AWS Solutions do not automatically delete these resources in case you have stored data to retain.
+
+For more detailed instructions, see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html).
+
+## Collection of operational metrics
+
+This solution collects anonymized operational metrics to help AWS improve the quality of features of the solution. For more information, including how to turn off this capability, see the [solution implementation guide](https://docs.aws.amazon.com/solutions/latest/video-on-demand-on-aws-foundation/welcome.html).
+
+## License information
 
 Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-This solution collects anonymized operational metrics to help AWS improve the quality of features of the solution. For more information, including how to disable this capability, please see the implementation guide.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

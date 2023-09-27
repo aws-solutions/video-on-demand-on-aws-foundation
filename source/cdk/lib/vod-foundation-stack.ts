@@ -271,7 +271,7 @@ export class VodFoundation extends cdk.Stack {
         );
 
         const customResourceLambda = new lambda.Function(this, 'CustomResource', {
-            runtime: lambda.Runtime.NODEJS_16_X,
+            runtime: lambda.Runtime.NODEJS_18_X,
             handler: 'index.handler',
             description: 'CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint',
             environment: {
@@ -301,16 +301,6 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
-        //cdk_nag
-        NagSuppressions.addResourceSuppressions(
-            customResourceLambda,
-            [
-                {
-                    id: 'AwsSolutions-L1',
-                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
-                }
-            ]
-        );
         /**
          * Call the custom resource, this will return the MediaConvert endpoint and a UUID
         */
@@ -337,6 +327,14 @@ export class VodFoundation extends cdk.Stack {
                 new iam.PolicyStatement({
                     actions: ["s3:GetObject"],
                     resources: [source.bucketArn, `${source.bucketArn}/*`]
+                }),
+                new iam.PolicyStatement({
+                    actions: [
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    resources: ['*'],
                 })
             ]
         });
@@ -354,7 +352,7 @@ export class VodFoundation extends cdk.Stack {
 
         const jobSubmit = new lambda.Function(this, 'jobSubmit', {
             code: lambda.Code.fromAsset(`../job-submit`),
-            runtime: lambda.Runtime.NODEJS_16_X,
+            runtime: lambda.Runtime.NODEJS_18_X,
             handler: 'index.handler',
             timeout: cdk.Duration.seconds(30),
             retryAttempts:0,
@@ -398,19 +396,9 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
-        //cdk_nag
-        NagSuppressions.addResourceSuppressions(
-            jobSubmit,
-            [
-                {
-                    id: 'AwsSolutions-L1',
-                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
-                }
-            ]
-        );
         /**
-         * Process outputs lambda function, invoked by CloudWatch events for MediaConvert.
-         * Parses the CW event outputs, creates the CloudFront URLs for the outputs, updates
+         * Process outputs lambda function, invoked by EventBridge for MediaConvert.
+         * Parses the event outputs, creates the CloudFront URLs for the outputs, updates
          * a manifest file in the destination bucket and send an SNS notfication.
          * Enviroment variables for the destination bucket and SNS topic are added by the
          *  solutions constructs
@@ -427,6 +415,14 @@ export class VodFoundation extends cdk.Stack {
                 new iam.PolicyStatement({
                     actions: ["s3:GetObject", "s3:PutObject"],
                     resources: [`${source.bucketArn}/*`]
+                }),
+                new iam.PolicyStatement({
+                    actions: [
+                        "logs:CreateLogGroup",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    resources: ['*'],
                 })
             ]
         });
@@ -444,11 +440,11 @@ export class VodFoundation extends cdk.Stack {
 
         const jobComplete = new lambda.Function(this, 'JobComplete', {
             code: lambda.Code.fromAsset(`../job-complete`),
-            runtime: lambda.Runtime.NODEJS_16_X,
+            runtime: lambda.Runtime.NODEJS_18_X,
             handler: 'index.handler',
             timeout: cdk.Duration.seconds(30),
             retryAttempts:0,
-            description: 'Triggered by Cloudwatch Events,processes completed MediaConvert jobs.',
+            description: 'Triggered by EventBridge,processes completed MediaConvert jobs.',
             environment: {
                 MEDIACONVERT_ENDPOINT: customResourceEndpoint.getAttString('Endpoint'),
                 CLOUDFRONT_DOMAIN: cloudFront.cloudFrontWebDistribution.distributionDomainName,
@@ -484,16 +480,6 @@ export class VodFoundation extends cdk.Stack {
                 }]
             }
         };
-        //cdk_nag
-        NagSuppressions.addResourceSuppressions(
-            jobComplete,
-            [
-                {
-                    id: 'AwsSolutions-L1',
-                    reason: 'nodejs 18 lambda runtime does not support javascript SDK v2'
-                }
-            ]
-        );
         /**
          * Custom resource to configure the source S3 bucket; upload default job-settings file and 
          * enabble event notifications to trigger the job-submit lambda function
@@ -506,7 +492,7 @@ export class VodFoundation extends cdk.Stack {
             }
         });
         /**
-         * Solution constructs, creates a CloudWatch event rule to trigger the process
+         * Solution constructs, creates a EventBridge rule to trigger the process
          * outputs lambda functions.
          */
         new EventbridgeToLambda(this, 'EventTrigger', { // NOSONAR

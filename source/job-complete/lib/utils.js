@@ -2,9 +2,10 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-const AWS = require('aws-sdk');
+const { MediaConvert } = require("@aws-sdk/client-mediaconvert");
+const { S3 } = require("@aws-sdk/client-s3");
+const { SNS } = require("@aws-sdk/client-sns");
 const axios = require('axios');
-const moment = require('moment');
 
 
 /**
@@ -14,15 +15,15 @@ const writeManifest = async (bucket, manifestFile,jobDetails) => {
     
     let results = {};
     try {
-        const s3 = new AWS.S3();
+        const s3 = new S3();
         /**
          * Download the settings file for S3
          */
         let manifest = await s3.getObject({
             Bucket: bucket,
             Key: manifestFile
-        }).promise();
-        manifest = JSON.parse(manifest.Body);
+        });
+        manifest = JSON.parse(await manifest.Body.transformToString());
  
         if (jobDetails.detail) {
             /**
@@ -56,7 +57,7 @@ const writeManifest = async (bucket, manifestFile,jobDetails) => {
             Bucket: bucket,
             Key: manifestFile,
             Body: JSON.stringify(manifest)
-        }).promise();
+        });
     } catch (err) {
         const error = new Error('Failed to update the jobs-manifest.json, please check its accessible in the root of the source S3 bucket');
         error.Error = err;
@@ -74,14 +75,14 @@ const writeManifest = async (bucket, manifestFile,jobDetails) => {
 const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
     console.log('Processing MediaConvert outputs');
     const buildUrl = (originalValue) => originalValue.slice(5).split('/').splice(1).join('/');
-    const mediaconvert = new AWS.MediaConvert({
+    const mediaconvert = new MediaConvert({
         endpoint: endpoint,
         customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     let jobDetails = {};
     
     try {
-        const jobData = await mediaconvert.getJob({ Id: data.detail.jobId }).promise();
+        const jobData = await mediaconvert.getJob({ Id: data.detail.jobId });
         
         jobDetails = {
             Id:data.detail.jobId,
@@ -131,7 +132,7 @@ const processJobDetails = async (endpoint,cloudfrontUrl,data) => {
  * Send An sns notification for any failed jobs
  */
 const sendSns = async (topic,stackName,status,data) => {
-    const sns = new AWS.SNS({
+    const sns = new SNS({
         region: process.env.REGION
     });
     try {
@@ -174,7 +175,7 @@ const sendSns = async (topic,stackName,status,data) => {
             TargetArn: topic,
             Message: JSON.stringify(msg, null, 2),
             Subject: `${stackName}: Job ${status} id:${id}`,
-        }).promise();
+        });
     } catch (err) {
         console.error(err);
         throw err;
@@ -214,7 +215,7 @@ const sendMetrics = async (solutionId,version,uuid,results) => {
             Solution: solutionId,
             Version: version,
             UUID: uuid,
-            TimeStamp: moment().utc().toISOString(),
+            TimeStamp: new Date().toISOString(),
             EventType:"JobComplete",
             EventData: payload
         };

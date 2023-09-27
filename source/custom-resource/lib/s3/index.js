@@ -5,7 +5,7 @@
 // Example identifier. 'AwsSolution/SO0052/v1.0.0'
 
 const options = { customUserAgent: process.env.SOLUTION_IDENTIFIER };
-const AWS = require('aws-sdk');
+const { S3 } = require("@aws-sdk/client-s3");
 const fs = require('fs');
 
 
@@ -15,17 +15,17 @@ const fs = require('fs');
 const setDefaults = async (bucket) => {
     console.log('creating files')
     try {
-        const s3 = new AWS.S3(options);
+        const s3 = new S3(options);
         await s3.putObject({
             Body: fs.readFileSync('./lib/s3/job-settings.json', 'utf8'),
             Bucket: bucket,
             Key: 'assets01/job-settings.json'
-        }).promise();
+        });
         await s3.putObject({
             Body:"{\n\"Jobs\": []\n}",
             Bucket: bucket,
             Key: 'jobs-manifest.json'
-        }).promise();
+        });
     } catch (err) {
         console.error(err);
         throw err;
@@ -60,7 +60,7 @@ const getS3ObjectCreatedHandlerConfig = (lambdaArn, suffix) => ({
 const putNotification = async (bucket, lambdaArn) => {
 
     try {
-        const s3 = new AWS.S3(options);
+        const s3 = new S3(options);
 
         const suffixList = [
             '.mpg',
@@ -85,7 +85,7 @@ const putNotification = async (bucket, lambdaArn) => {
                     getS3ObjectCreatedHandlerConfig(lambdaArn, suffix.toUpperCase()),
                 ])).flat(),
             }
-        }).promise();
+        });
     } catch (err) {
         console.error(err);
         throw err;

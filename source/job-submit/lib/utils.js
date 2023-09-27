@@ -2,7 +2,9 @@
  * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *  SPDX-License-Identifier: Apache-2.0
  */
-const AWS = require('aws-sdk');
+const { MediaConvert } = require("@aws-sdk/client-mediaconvert");
+const { S3 } = require("@aws-sdk/client-s3");
+const { SNS } = require("@aws-sdk/client-sns");
 
 /**
  * Download Job Settings from s3 and run a basic validationvalidate 
@@ -14,12 +16,12 @@ const getJobSettings = async (bucket, settingsFile) => {
         /**
          * Download the dsettings file for S3
          */
-        const s3 = new AWS.S3();
+        const s3 = new S3();
         settings = await s3.getObject({
             Bucket: bucket,
             Key: settingsFile
-        }).promise();
-        settings = JSON.parse(settings.Body);
+        });
+        settings = JSON.parse(await settings.Body.transformToString());
         /**
          * Basic file validation for the settings file
          * 
@@ -114,12 +116,12 @@ const updateJobSettings = async (job, inputPath, outputPath, metadata, role) => 
  * Create and encoding job in MediaConvert
  */
 const createJob = async (job, endpoint) => {
-    const mediaconvert = new AWS.MediaConvert({
+    const mediaconvert = new MediaConvert({
         endpoint: endpoint,
         customUserAgent: process.env.SOLUTION_IDENTIFIER
     });
     try {
-        await mediaconvert.createJob(job).promise();
+        await mediaconvert.createJob(job);
         console.log(`job subbmited to MediaConvert:: ${JSON.stringify(job, null, 2)}`);
     } catch (err) {
         console.error(err);
@@ -133,7 +135,7 @@ const createJob = async (job, endpoint) => {
  */
 const sendError = async (topic,stackName,logGroupName,err) => {
     console.log(`Sending SNS error notification: ${err}`);
-    const sns = new AWS.SNS({
+    const sns = new SNS({
         region: process.env.REGION
     });
     try {
@@ -145,7 +147,7 @@ const sendError = async (topic,stackName,logGroupName,err) => {
             TargetArn: topic,
             Message: JSON.stringify(msg, null, 2),
             Subject: `${stackName}: Encoding Job Submit Failed`,
-        }).promise();
+        });
     } catch (err) {
         console.error(err);
         throw err;

@@ -7,12 +7,8 @@ expect.addSnapshotSerializer({
     print: (val) => {
         const valueReplacements = [
             {
-                regex: /AssetParameters([A-Fa-f0-9]{64})(\w+)/,
-                replacementValue: 'AssetParameters[HASH REMOVED]'
-            },
-            {
-                regex: /(\w+ for asset)\s?(version)?\s?"([A-Fa-f0-9]{64})"/,
-                replacementValue: '$1 [HASH REMOVED]'
+                regex: /([A-Fa-f0-9]{64}).zip/,
+                replacementValue: '[HASH REMOVED].zip'
             }
         ];
         return `${valueReplacements.reduce(
@@ -24,6 +20,6 @@ expect.addSnapshotSerializer({
 
 test('VOD Foundation Stack Test', () => {
     const stack = new Stack();
-    new VodStack.VodFoundation(stack, 'VOD');
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+    const vodTest = new VodStack.VodFoundation(stack, 'VOD');
+    expect(SynthUtils.toCloudFormation(vodTest)).toMatchSnapshot();
 });
