@@ -2,7 +2,7 @@
   "name": "vod-custom-resource",
   "version": "1.0.0",
   "engines": {
-    "node": ">=12"
+    "node": ">=18"
   },
   "description": "cfn custom resources for video on demand",
   "main": "index.js",
@@ -14,8 +14,10 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "aws-sdk": "^2.609.0",
-    "jest": "^29.5.0"
+    "jest": "^29.6.4",
+    "aws-sdk-client-mock": "3.0.0",
+    "@aws-sdk/client-mediaconvert": "^3.398.0",
+    "@aws-sdk/client-s3": "^3.398.0"
   },
   "private": true,
   "author": {

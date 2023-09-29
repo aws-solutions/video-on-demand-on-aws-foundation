@@ -3,52 +3,36 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 const index = require('./index.js');
-/**
- * setup
- */
-const mockDescribeEndpoints = jest.fn();
-jest.mock('aws-sdk', () => {
-    return {
-        MediaConvert: jest.fn(() => ({
-            describeEndpoints: mockDescribeEndpoints
-        }))
-    };
-});
+const { mockClient } = require("aws-sdk-client-mock");
+const {
+    MediaConvertClient,
+    DescribeEndpointsCommand
+} = require("@aws-sdk/client-mediaconvert");
+
+const describeEndpointsData = {
+    Endpoints: [
+        {
+            Url: 'https://mediaconvert'
+        }
+    ]
+};
+
 /**
  * Tests
  */
 describe('GetEndPoint',() => {
-    beforeEach(() => {
-        mockDescribeEndpoints.mockReset();
-    });
+    const mediaConvertClientMock = mockClient(MediaConvertClient);
+    
     it('Decribe Endpoints Success test', async () => {
-        mockDescribeEndpoints.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve({
-                    Endpoints:[
-                        {
-                            Url:'https://mediaconvert'
-                        }
-                    ]
-                });
-              }
-            };
-        });
+        mediaConvertClientMock.on(DescribeEndpointsCommand).resolves(describeEndpointsData);
         await index.getEndpoint((res) => {
-            expect(res).toEqual('https://mediaconvert');
+            expect(res).toEqual(describeEndpointsData.Endpoints[0].Url);
         });
     });
     it('Describe Endpoints Failed test', async () => {
-        mockDescribeEndpoints.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('Describe endpoint Failed');
-                }
-            };
-        });
+        mediaConvertClientMock.on(DescribeEndpointsCommand).rejects('Describe endpoint Failed');
         await index.getEndpoint().catch(err => {
-            expect(err.toString()).toEqual('Describe endpoint Failed')
+            expect(err.toString()).toEqual('Error: Describe endpoint Failed')
         });
     });
 });

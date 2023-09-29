@@ -3,93 +3,41 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 const index = require('./index.js');
+const { mockClient } = require("aws-sdk-client-mock");
+const { 
+    S3Client, 
+    PutBucketNotificationConfigurationCommand,
+    PutObjectCommand
+} = require("@aws-sdk/client-s3");
 /**
  * setup
  */
-const mockPutObject = jest.fn();
-const mockNotification = jest.fn();
-const mockAddPermissions = jest.fn();
+const s3ClientMock = mockClient(S3Client);
 
-jest.mock('aws-sdk', () => {
-    return {
-        S3: jest.fn(() => ({
-            putObject: mockPutObject,
-            putBucketNotificationConfiguration:mockNotification
-        })),
-        Lambda: jest.fn(() => ({
-            addPermission:mockAddPermissions
-        }))
-    };
-});
 /**
  * Tests
  */
 describe('S3 PutObject',() => {
-    beforeEach(() => {
-        mockPutObject.mockReset();
-    });
     it('S3 Put Success test', async () => {
-        mockPutObject.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
+        s3ClientMock.on(PutObjectCommand).resolves();
         await index.setDefaults();
     });
     it('S3 Put Failed test', async () => {
-        mockPutObject.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('PUT FAILED');
-                }
-            };
-        });
+        s3ClientMock.on(PutObjectCommand).rejects('PUT FAILED');
         await index.setDefaults().catch(err => {
-            expect(err.toString()).toEqual('PUT FAILED')
+            expect(err.toString()).toEqual('Error: PUT FAILED')
         });
     });
 });
 describe('S3 Put Bucket Notification',() => {
-    beforeEach(() => {
-        mockPutObject.mockReset();
-        mockAddPermissions.mockReset();
-    });
     it('S3 Put Notification success test', async () => {
-        mockNotification.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
-        mockAddPermissions.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
+        s3ClientMock.on(PutBucketNotificationConfigurationCommand).resolves();
         await index.putNotification();
     });
     it('S3 Bucket Notification Failed test', async () => {
-        mockAddPermissions.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
-        mockNotification.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('PUT FAILED');
-                }
-            };
-        });
+        s3ClientMock.on(PutBucketNotificationConfigurationCommand).rejects('PUT FAILED');
         await index.putNotification().catch(err => {
-            expect(err.toString()).toEqual('PUT FAILED')
+            expect(err.toString()).toEqual('Error: PUT FAILED')
         });
     });
 });

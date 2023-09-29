@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2023-9-29
+### Added
+- Enabled logging for JobSubmit and JobComplete Lambdas
+
+### Changed
+- Updated Lambdas to NodeJS 18 and JavaScript AWS SDK v3
+- Updated packages
+- Removed deprecated moment package
+
+### Fixed
+- cdk snapshot test
+
 ## [1.3.0] - 2023-6-1
 ### Added
 - cdk-nag rule suppressions

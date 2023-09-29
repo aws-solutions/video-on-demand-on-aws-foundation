@@ -3,35 +3,39 @@
  *  SPDX-License-Identifier: Apache-2.0
  */
 const utils = require('./utils.js');
+const { mockClient } = require("aws-sdk-client-mock");
+const { 
+    MediaConvertClient,
+    CreateJobCommand
+} = require("@aws-sdk/client-mediaconvert");
+const { 
+    S3Client,
+    GetObjectCommand
+} = require("@aws-sdk/client-s3");
+const { 
+    SNSClient,
+    PublishCommand
+} = require("@aws-sdk/client-sns");
 
 /**
  * setup
  */
-const mockGetObject = jest.fn();
-const mockCreateJob = jest.fn();
-const mockPublish = jest.fn();
+const mediaConvertClientMock = mockClient(MediaConvertClient);
+const s3ClientMock = mockClient(S3Client);
+const snsClientMock = mockClient(SNSClient);
 
-jest.mock('aws-sdk', () => {
-    return {
-        S3: jest.fn(() => ({
-            getObject: mockGetObject,
-        })),
-        MediaConvert: jest.fn(() => ({
-            createJob: mockCreateJob,
-        })),
-        SNS: jest.fn(() => ({
-            publish: mockPublish,
-        }))
-    };
-});
 /**
  * Mock Data
  */
 const s3Valid = {
-    "Body": "{\n\"Settings\":{}\n}"
+    "Body": {
+        transformToString: () => ("{\n\"Settings\":{}\n}")
+    }
 };
 const s3Invalid = {
-    "Body": "{\n\"Error\":{}\n}"
+    "Body": {
+        transformToString: () => ("{\n\"Error\":{}\n}")
+    }
 };
 
 const validSettings = {
@@ -158,41 +162,20 @@ const inValidSettings = {
  * Tests
  */
 describe('Utils GetJobSettings',() => {
-    beforeEach(() => {
-        mockGetObject.mockReset();
-    });
     it('GetJobSettings Success test', async () => {
-        mockGetObject.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve(s3Valid);
-              }
-            };
-        });
+        s3ClientMock.on(GetObjectCommand).resolves(s3Valid);
         await utils.getJobSettings();
     });
-    it('GetJobSettings Success test', async () => {
-        mockGetObject.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve(s3Invalid);
-              }
-            };
-        });
+    it('GetJobSettings Invalid test', async () => {
+        s3ClientMock.on(GetObjectCommand).resolves(s3Invalid);
         await utils.getJobSettings().catch(err => {
             expect(err.Error.toString()).toEqual('Error: Invalid settings file in s3')
         });
     });
     it('GetJobSettings Failed test', async () => {
-        mockGetObject.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('GET FAILED');
-                }
-            };
-        });
+        s3ClientMock.on(GetObjectCommand).rejects('GET FAILED');
         await utils.getJobSettings().catch(err => {
-            expect(err.Error.toString()).toEqual('GET FAILED')
+            expect(err.Error.toString()).toEqual('Error: GET FAILED')
             expect(err.message).toEqual('Failed to download and validate the job-settings.json file. Please check its contents and location. Details  on using custom settings: https://github.com/awslabs/video-on-demand-on-aws-foundations');
         });
     });
@@ -211,56 +194,26 @@ describe('Utils UpdateJobSettings',() => {
     });
 });
 describe('Utils CreateJob',() => {
-    beforeEach(() => {
-        mockCreateJob.mockReset();
-    });
     it('CreateJob Success test', async () => {
-        mockCreateJob.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
+        mediaConvertClientMock.on(CreateJobCommand).resolves();
         await utils.createJob('job','endpoint');
     });
     it('CreateJob Failed test', async () => {
-        mockCreateJob.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('JOB FAILED');
-                }
-            };
-        });
+        mediaConvertClientMock.on(CreateJobCommand).rejects('JOB FAILED');
         await utils.createJob('job','endpoint').catch(err => {
-            expect(err.toString()).toEqual('JOB FAILED')
+            expect(err.toString()).toEqual('Error: JOB FAILED')
         });
     });
 });
 describe('Utils SendError',() => {
-    beforeEach(() => {
-        mockPublish.mockReset();
-    });
     it('SendError Success test', async () => {
-        mockPublish.mockImplementation(() => {
-            return {
-              promise() {
-                return Promise.resolve();
-              }
-            };
-        });
+        snsClientMock.on(PublishCommand).resolves();
         await utils.sendError('topic','stackName','err');
     });
     it('SendError Failed test', async () => {
-        mockPublish.mockImplementation(() => {
-            return {
-                promise() {
-                    return Promise.reject('JOB FAILED');
-                }
-            };
-        });
+        snsClientMock.on(PublishCommand).rejects('JOB FAILED');
         await utils.sendError('topic','stackName','err').catch(err => {
-            expect(err.toString()).toEqual('JOB FAILED')
+            expect(err.toString()).toEqual('Error: JOB FAILED')
         });
     });
 });
