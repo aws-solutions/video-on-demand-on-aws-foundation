@@ -1,3 +1,8 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 const cwComplete = {
   version: "0",
   id: "d3116301-c01d-686b-92b2-692d5ae9a0ef",

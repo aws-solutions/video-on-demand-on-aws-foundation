@@ -1,19 +1,37 @@
 /**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
  */
 
 // Imports
 const fs = require('fs');
 const _regex = /[\w]*AssetParameters/g; //this regular express also takes into account lambda functions defined in nested stacks
+
+// Build context mapping from command line arguments.
+//
+// Example:
+//   --name value --anothername anothervalue
+//
+// The example will produce an object that looks like:
+//   { "name": "value", "anothername": "anothervalue" }
+//
+// The script looks for the following names:
+//  * solution_name
+//  * solution_version
+//  * bucket_name
+const contextMap = (function () {
+  const commandLineArgs = process.argv.slice(2);
+  const result = {};
+  for (let i = 0; i < commandLineArgs.length - 1; ++i) {
+    const arg = commandLineArgs[i];
+    if (arg.startsWith('--')) {
+      const name = arg.substr(2);
+      const value = commandLineArgs[++i];
+      result[name] = value;
+    }
+  }
+  return result;
+}());
 
 // Paths
 const global_s3_assets = '../global-s3-assets';
@@ -43,10 +61,10 @@ fs.readdirSync(global_s3_assets).forEach((file) => {
                 artifactHash.indexOf('.zip')
             );
             const assetPath = `asset${artifactHash}`;
-            fn.Properties.Code.S3Key = `%%SOLUTION_NAME%%/%%VERSION%%/${assetPath}.zip`;
+            fn.Properties.Code.S3Key = `${contextMap.solution_name}/${contextMap.solution_version}/${assetPath}.zip`;
             // Set the S3 bucket reference
             fn.Properties.Code.S3Bucket = {
-                'Fn::Sub': '%%BUCKET_NAME%%-${AWS::Region}',
+                'Fn::Sub': [contextMap.bucket_name, '${AWS::Region}'].join('-'),
             };
             // Set the handler
             const handler = fn.Properties.Handler;

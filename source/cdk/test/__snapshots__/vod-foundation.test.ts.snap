@@ -2,271 +2,271 @@
 
 exports[`VOD Foundation Stack Test 1`] = `
 {
-  Description: (SO0146) %%VERSION%%: Video on Demand on AWS Foundation Solution Implementation,
-  Mappings: {
-    Send: {
-      AnonymizedUsage: {
-        Data: Yes,
+  "Description": "(SO0146) Video on Demand on AWS Foundation Solution Implementation. Version %%VERSION%%",
+  "Mappings": {
+    "Send": {
+      "AnonymizedUsage": {
+        "Data": "Yes",
       },
     },
   },
-  Outputs: {
-    CloudFrontDomain: {
-      Description: CloudFront Domain Name,
-      Export: {
-        Name: {
-          Fn::Join: [
-            ,
+  "Outputs": {
+    "CloudFrontDomain": {
+      "Description": "CloudFront Domain Name",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
-              -CloudFrontDomain,
+              "-CloudFrontDomain",
             ],
           ],
         },
       },
-      Value: {
-        Fn::GetAtt: [
-          CloudFrontCloudFrontDistribution824F3346,
-          DomainName,
+      "Value": {
+        "Fn::GetAtt": [
+          "CloudFrontCloudFrontDistribution824F3346",
+          "DomainName",
         ],
       },
     },
-    DestinationBucket: {
-      Description: Source S3 Bucket used to host all MediaConvert ouputs,
-      Export: {
-        Name: {
-          Fn::Join: [
-            ,
+    "DestinationBucket": {
+      "Description": "Source S3 Bucket used to host all MediaConvert ouputs",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
-              -DestinationBucket,
+              "-DestinationBucket",
             ],
           ],
         },
       },
-      Value: {
-        Ref: Destination920A3C57,
+      "Value": {
+        "Ref": "Destination920A3C57",
       },
     },
-    SnsTopic: {
-      Description: SNS Topic used to capture the VOD workflow outputs including errors,
-      Export: {
-        Name: {
-          Fn::Join: [
-            ,
+    "SnsTopic": {
+      "Description": "SNS Topic used to capture the VOD workflow outputs including errors",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
-              -SnsTopic,
+              "-SnsTopic",
             ],
           ],
         },
       },
-      Value: {
-        Fn::GetAtt: [
-          NotificationSnsTopicB941FD22,
-          TopicName,
+      "Value": {
+        "Fn::GetAtt": [
+          "NotificationSnsTopicB941FD22",
+          "TopicName",
         ],
       },
     },
-    SourceBucket: {
-      Description: Source S3 Bucket used to host source video and MediaConvert job settings files,
-      Export: {
-        Name: {
-          Fn::Join: [
-            ,
+    "SourceBucket": {
+      "Description": "Source S3 Bucket used to host source video and MediaConvert job settings files",
+      "Export": {
+        "Name": {
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
-              -SourceBucket,
+              "-SourceBucket",
             ],
           ],
         },
       },
-      Value: {
-        Ref: Source71E471F1,
+      "Value": {
+        "Ref": "Source71E471F1",
       },
     },
   },
-  Parameters: {
-    emailAddress: {
-      AllowedPattern: ^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$,
-      Description: The admin email address to receive SNS notifications for job status.,
-      Type: String,
+  "Parameters": {
+    "emailAddress": {
+      "AllowedPattern": "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$",
+      "Description": "The admin email address to receive SNS notifications for job status.",
+      "Type": "String",
     },
   },
-  Resources: {
-    AppRegistryApp5349BE86: {
-      Properties: {
-        Description: Service Catalog application to track and manage all your resources. The SolutionId is SO0146 and SolutionVersion is %%VERSION%%.,
-        Name: {
-          Fn::Join: [
-            ,
+  "Resources": {
+    "AppRegistryApp5349BE86": {
+      "Properties": {
+        "Description": "Service Catalog application to track and manage all your resources. The SolutionId is SO0146 and SolutionVersion is %%VERSION%%.",
+        "Name": {
+          "Fn::Join": [
+            "",
             [
-              vod-foundation-,
+              "vod-foundation-",
               {
-                Ref: AWS::Region,
+                "Ref": "AWS::Region",
               },
-              -,
+              "-",
               {
-                Ref: AWS::AccountId,
+                "Ref": "AWS::AccountId",
               },
-              -,
+              "-",
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
             ],
           ],
         },
-        Tags: {
-          Solutions:ApplicationType: AWS-Solutions,
-          Solutions:SolutionID: SO0146,
-          Solutions:SolutionName: Video on Demand on AWS Foundation,
-          Solutions:SolutionVersion: %%VERSION%%,
+        "Tags": {
+          "Solutions:ApplicationType": "AWS-Solutions",
+          "Solutions:SolutionID": "SO0146",
+          "Solutions:SolutionName": "Video on Demand on AWS Foundation",
+          "Solutions:SolutionVersion": "%%VERSION%%",
         },
       },
-      Type: AWS::ServiceCatalogAppRegistry::Application,
+      "Type": "AWS::ServiceCatalogAppRegistry::Application",
     },
-    AppRegistryAssociation: {
-      Properties: {
-        Application: {
-          Fn::GetAtt: [
-            AppRegistryApp5349BE86,
-            Id,
+    "AppRegistryAssociation": {
+      "Properties": {
+        "Application": {
+          "Fn::GetAtt": [
+            "AppRegistryApp5349BE86",
+            "Id",
           ],
         },
-        Resource: {
-          Ref: AWS::StackId,
+        "Resource": {
+          "Ref": "AWS::StackId",
         },
-        ResourceType: CFN_STACK,
+        "ResourceType": "CFN_STACK",
       },
-      Type: AWS::ServiceCatalogAppRegistry::ResourceAssociation,
+      "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
     },
-    AppRegistryAttributeGroup7AF07446: {
-      Properties: {
-        Attributes: {
-          ApplicationType: AWS-Solutions,
-          SolutionID: SO0146,
-          SolutionName: Video on Demand on AWS Foundation,
-          SolutionVersion: %%VERSION%%,
+    "AppRegistryAttributeGroup7AF07446": {
+      "Properties": {
+        "Attributes": {
+          "ApplicationType": "AWS-Solutions",
+          "SolutionID": "SO0146",
+          "SolutionName": "Video on Demand on AWS Foundation",
+          "SolutionVersion": "%%VERSION%%",
         },
-        Description: Attribute group for solution information.,
-        Name: {
-          Fn::Join: [
-            ,
+        "Description": "Attribute group for solution information.",
+        "Name": {
+          "Fn::Join": [
+            "",
             [
               {
-                Ref: AWS::Region,
+                "Ref": "AWS::Region",
               },
-              -,
+              "-",
               {
-                Ref: AWS::StackName,
+                "Ref": "AWS::StackName",
               },
             ],
           ],
         },
       },
-      Type: AWS::ServiceCatalogAppRegistry::AttributeGroup,
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
     },
-    AppRegistryAttributeGroupApplicationAttributeGroupAssociationabc082aa5541338F99AC: {
-      Properties: {
-        Application: {
-          Fn::GetAtt: [
-            AppRegistryApp5349BE86,
-            Id,
+    "AppRegistryAttributeGroupApplicationAttributeGroupAssociationabc082aa5541338F99AC": {
+      "Properties": {
+        "Application": {
+          "Fn::GetAtt": [
+            "AppRegistryApp5349BE86",
+            "Id",
           ],
         },
-        AttributeGroup: {
-          Fn::GetAtt: [
-            AppRegistryAttributeGroup7AF07446,
-            Id,
+        "AttributeGroup": {
+          "Fn::GetAtt": [
+            "AppRegistryAttributeGroup7AF07446",
+            "Id",
           ],
         },
       },
-      Type: AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation,
+      "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
     },
-    CloudFrontCloudFrontDistribution824F3346: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "CloudFrontCloudFrontDistribution824F3346": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-CFR1,
-              reason: Use case does not warrant CloudFront Geo restriction,
+              "id": "AwsSolutions-CFR1",
+              "reason": "Use case does not warrant CloudFront Geo restriction",
             },
             {
-              id: AwsSolutions-CFR2,
-              reason: Use case does not warrant CloudFront integration with AWS WAF,
+              "id": "AwsSolutions-CFR2",
+              "reason": "Use case does not warrant CloudFront integration with AWS WAF",
             },
             {
-              id: AwsSolutions-CFR4,
-              reason: CloudFront automatically sets the security policy to TLSv1 when the distribution uses the CloudFront domain name,
+              "id": "AwsSolutions-CFR4",
+              "reason": "CloudFront automatically sets the security policy to TLSv1 when the distribution uses the CloudFront domain name",
             },
           ],
         },
-        cfn_nag: {
-          rules_to_suppress: [
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W70,
-              reason: Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion,
+              "id": "W70",
+              "reason": "Since the distribution uses the CloudFront domain name, CloudFront automatically sets the security policy to TLSv1 regardless of the value of MinimumProtocolVersion",
             },
           ],
         },
       },
-      Properties: {
-        DistributionConfig: {
-          Comment: {
-            Fn::Join: [
-              ,
+      "Properties": {
+        "DistributionConfig": {
+          "Comment": {
+            "Fn::Join": [
+              "",
               [
                 {
-                  Ref: AWS::StackName,
+                  "Ref": "AWS::StackName",
                 },
-                 Video on Demand Foundation,
+                " Video on Demand Foundation",
               ],
             ],
           },
-          DefaultCacheBehavior: {
-            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6,
-            Compress: true,
-            TargetOriginId: VODCloudFrontCloudFrontDistributionOrigin1D96CD58B,
-            ViewerProtocolPolicy: redirect-to-https,
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "TargetOriginId": "VODCloudFrontCloudFrontDistributionOrigin1D96CD58B",
+            "ViewerProtocolPolicy": "redirect-to-https",
           },
-          DefaultRootObject: index.html,
-          Enabled: true,
-          HttpVersion: http2,
-          IPV6Enabled: true,
-          Logging: {
-            Bucket: {
-              Fn::GetAtt: [
-                Logs6819BB44,
-                RegionalDomainName,
+          "DefaultRootObject": "index.html",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Logging": {
+            "Bucket": {
+              "Fn::GetAtt": [
+                "Logs6819BB44",
+                "RegionalDomainName",
               ],
             },
-            Prefix: cloudfront-logs/,
+            "Prefix": "cloudfront-logs/",
           },
-          Origins: [
+          "Origins": [
             {
-              DomainName: {
-                Fn::GetAtt: [
-                  Destination920A3C57,
-                  RegionalDomainName,
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "Destination920A3C57",
+                  "RegionalDomainName",
                 ],
               },
-              Id: VODCloudFrontCloudFrontDistributionOrigin1D96CD58B,
-              S3OriginConfig: {
-                OriginAccessIdentity: {
-                  Fn::Join: [
-                    ,
+              "Id": "VODCloudFrontCloudFrontDistributionOrigin1D96CD58B",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
                     [
-                      origin-access-identity/cloudfront/,
+                      "origin-access-identity/cloudfront/",
                       {
-                        Ref: CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A,
+                        "Ref": "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A",
                       },
                     ],
                   ],
@@ -276,1311 +276,1335 @@ exports[`VOD Foundation Stack Test 1`] = `
           ],
         },
       },
-      Type: AWS::CloudFront::Distribution,
+      "Type": "AWS::CloudFront::Distribution",
     },
-    CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A: {
-      Properties: {
-        CloudFrontOriginAccessIdentityConfig: {
-          Comment: Identity for VODCloudFrontCloudFrontDistributionOrigin1D96CD58B,
+    "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A": {
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Identity for VODCloudFrontCloudFrontDistributionOrigin1D96CD58B",
         },
       },
-      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity,
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
     },
-    CustomResource8CDCD7A7: {
-      DependsOn: [
-        CustomResourcePolicy79526710,
-        CustomResourceRoleAB1EF463,
+    "CustomResource8CDCD7A7": {
+      "DependsOn": [
+        "CustomResourcePolicy79526710",
+        "CustomResourceRoleAB1EF463",
       ],
-      Metadata: {
-        cfn_nag: {
-          rules_to_suppress: [
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W58,
-              reason: Invalid warning: function has access to cloudwatch,
+              "id": "W58",
+              "reason": "Invalid warning: function has access to cloudwatch",
             },
             {
-              id: W89,
-              reason: Invalid warning: lambda not needed in VPC,
+              "id": "W89",
+              "reason": "Invalid warning: lambda not needed in VPC",
             },
             {
-              id: W92,
-              reason: Invalid warning: lambda does not need ReservedConcurrentExecutions,
+              "id": "W92",
+              "reason": "Invalid warning: lambda does not need ReservedConcurrentExecutions",
             },
           ],
         },
       },
-      Properties: {
-        Code: {
-          S3Bucket: {
-            Fn::Sub: cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region},
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          S3Key: [HASH REMOVED].zip,
+          "S3Key": "[HASH REMOVED].zip",
         },
-        Description: CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint,
-        Environment: {
-          Variables: {
-            SOLUTION_IDENTIFIER: AwsSolution/SO0146/%%VERSION%%,
+        "Description": "CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint",
+        "Environment": {
+          "Variables": {
+            "SOLUTION_IDENTIFIER": "AwsSolution/SO0146/%%VERSION%%",
           },
         },
-        Handler: index.handler,
-        Role: {
-          Fn::GetAtt: [
-            CustomResourceRoleAB1EF463,
-            Arn,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceRoleAB1EF463",
+            "Arn",
           ],
         },
-        Runtime: nodejs18.x,
-        Timeout: 30,
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
       },
-      Type: AWS::Lambda::Function,
+      "Type": "AWS::Lambda::Function",
     },
-    CustomResourcePolicy79526710: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "CustomResourcePolicy79526710": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-IAM5,
-              reason: Resource ARNs are not generated at the time of policy creation,
+              "id": "AwsSolutions-IAM5",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
+            },
+          ],
+        },
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
             },
           ],
         },
       },
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: [
-                s3:PutObject,
-                s3:PutBucketNotification,
+              "Action": [
+                "s3:PutObject",
+                "s3:PutBucketNotification",
               ],
-              Effect: Allow,
-              Resource: [
+              "Effect": "Allow",
+              "Resource": [
                 {
-                  Fn::GetAtt: [
-                    Source71E471F1,
-                    Arn,
+                  "Fn::GetAtt": [
+                    "Source71E471F1",
+                    "Arn",
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Source71E471F1,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Source71E471F1",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
             {
-              Action: mediaconvert:DescribeEndpoints,
-              Effect: Allow,
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Action": "mediaconvert:DescribeEndpoints",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
-                    arn:aws:mediaconvert:,
+                    "arn:aws:mediaconvert:",
                     {
-                      Ref: AWS::Region,
+                      "Ref": "AWS::Region",
                     },
-                    :,
+                    ":",
                     {
-                      Ref: AWS::AccountId,
+                      "Ref": "AWS::AccountId",
                     },
-                    :*,
+                    ":*",
                   ],
                 ],
               },
             },
             {
-              Action: [
-                logs:CreateLogGroup,
-                logs:CreateLogStream,
-                logs:PutLogEvents,
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
               ],
-              Effect: Allow,
-              Resource: *,
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: CustomResourcePolicy79526710,
-        Roles: [
+        "PolicyName": "CustomResourcePolicy79526710",
+        "Roles": [
           {
-            Ref: CustomResourceRoleAB1EF463,
+            "Ref": "CustomResourceRoleAB1EF463",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    CustomResourceRoleAB1EF463: {
-      Properties: {
-        AssumeRolePolicyDocument: {
-          Statement: [
+    "CustomResourceRoleAB1EF463": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              Action: sts:AssumeRole,
-              Effect: Allow,
-              Principal: {
-                Service: lambda.amazonaws.com,
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::IAM::Role,
+      "Type": "AWS::IAM::Role",
     },
-    Destination920A3C57: {
-      DeletionPolicy: Retain,
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "Destination920A3C57": {
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-S10,
-              reason: Bucket is private and is not using HTTP,
+              "id": "AwsSolutions-S10",
+              "reason": "Bucket is private and is not using HTTP",
             },
           ],
         },
       },
-      Properties: {
-        BucketEncryption: {
-          ServerSideEncryptionConfiguration: [
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
             {
-              ServerSideEncryptionByDefault: {
-                SSEAlgorithm: AES256,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        CorsConfiguration: {
-          CorsRules: [
+        "CorsConfiguration": {
+          "CorsRules": [
             {
-              AllowedHeaders: [
-                *,
+              "AllowedHeaders": [
+                "*",
               ],
-              AllowedMethods: [
-                GET,
+              "AllowedMethods": [
+                "GET",
               ],
-              AllowedOrigins: [
-                *,
+              "AllowedOrigins": [
+                "*",
               ],
-              MaxAge: 3000,
+              "MaxAge": 3000,
             },
           ],
         },
-        LoggingConfiguration: {
-          DestinationBucketName: {
-            Ref: Logs6819BB44,
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "Logs6819BB44",
           },
-          LogFilePrefix: destination-bucket-logs/,
+          "LogFilePrefix": "destination-bucket-logs/",
         },
-        PublicAccessBlockConfiguration: {
-          BlockPublicAcls: true,
-          BlockPublicPolicy: true,
-          IgnorePublicAcls: true,
-          RestrictPublicBuckets: true,
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
         },
-        VersioningConfiguration: {
-          Status: Enabled,
+        "VersioningConfiguration": {
+          "Status": "Enabled",
         },
       },
-      Type: AWS::S3::Bucket,
-      UpdateReplacePolicy: Retain,
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
     },
-    DestinationPolicy7982387E: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "DestinationPolicy7982387E": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-S10,
-              reason: Bucket is private and is not using HTTP,
+              "id": "AwsSolutions-S10",
+              "reason": "Bucket is private and is not using HTTP",
             },
           ],
         },
-        cfn_nag: {
-          rules_to_suppress: [
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: F16,
-              reason: Public website bucket policy requires a wildcard principal,
+              "id": "F16",
+              "reason": "Public website bucket policy requires a wildcard principal",
             },
           ],
         },
       },
-      Properties: {
-        Bucket: {
-          Ref: Destination920A3C57,
+      "Properties": {
+        "Bucket": {
+          "Ref": "Destination920A3C57",
         },
-        PolicyDocument: {
-          Statement: [
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: s3:*,
-              Condition: {
-                Bool: {
-                  aws:SecureTransport: false,
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
                 },
               },
-              Effect: Deny,
-              Principal: {
-                AWS: *,
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
               },
-              Resource: [
+              "Resource": [
                 {
-                  Fn::GetAtt: [
-                    Destination920A3C57,
-                    Arn,
+                  "Fn::GetAtt": [
+                    "Destination920A3C57",
+                    "Arn",
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Destination920A3C57,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Destination920A3C57",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
             {
-              Action: s3:GetObject,
-              Effect: Allow,
-              Principal: {
-                CanonicalUser: {
-                  Fn::GetAtt: [
-                    CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A,
-                    S3CanonicalUserId,
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
+                    "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A",
+                    "S3CanonicalUserId",
                   ],
                 },
               },
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
                     {
-                      Fn::GetAtt: [
-                        Destination920A3C57,
-                        Arn,
+                      "Fn::GetAtt": [
+                        "Destination920A3C57",
+                        "Arn",
                       ],
                     },
-                    /*,
+                    "/*",
                   ],
                 ],
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::S3::BucketPolicy,
+      "Type": "AWS::S3::BucketPolicy",
     },
-    Endpoint: {
-      DeletionPolicy: Delete,
-      Properties: {
-        ServiceToken: {
-          Fn::GetAtt: [
-            CustomResource8CDCD7A7,
-            Arn,
+    "Endpoint": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResource8CDCD7A7",
+            "Arn",
           ],
         },
       },
-      Type: AWS::CloudFormation::CustomResource,
-      UpdateReplacePolicy: Delete,
+      "Type": "AWS::CloudFormation::CustomResource",
+      "UpdateReplacePolicy": "Delete",
     },
-    EventTriggerEventsRule76A88FDF: {
-      Properties: {
-        EventPattern: {
-          detail: {
-            status: [
-              COMPLETE,
-              ERROR,
-              CANCELED,
-              INPUT_INFORMATION,
+    "EventTriggerEventsRule76A88FDF": {
+      "Properties": {
+        "EventPattern": {
+          "detail": {
+            "status": [
+              "COMPLETE",
+              "ERROR",
+              "CANCELED",
+              "INPUT_INFORMATION",
             ],
-            userMetadata: {
-              StackName: [
+            "userMetadata": {
+              "StackName": [
                 {
-                  Ref: AWS::StackName,
+                  "Ref": "AWS::StackName",
                 },
               ],
             },
           },
-          source: [
-            aws.mediaconvert,
+          "source": [
+            "aws.mediaconvert",
           ],
         },
-        State: ENABLED,
-        Targets: [
+        "State": "ENABLED",
+        "Targets": [
           {
-            Arn: {
-              Fn::GetAtt: [
-                JobComplete703682D0,
-                Arn,
+            "Arn": {
+              "Fn::GetAtt": [
+                "JobComplete703682D0",
+                "Arn",
               ],
             },
-            Id: Target0,
+            "Id": "Target0",
           },
         ],
       },
-      Type: AWS::Events::Rule,
+      "Type": "AWS::Events::Rule",
     },
-    JobComplete703682D0: {
-      DependsOn: [
-        JobCompletePolicyBBFD3892,
-        JobCompleteRoleDefaultPolicyD4DC2F12,
-        JobCompleteRole81FD9028,
+    "JobComplete703682D0": {
+      "DependsOn": [
+        "JobCompletePolicyBBFD3892",
+        "JobCompleteRoleDefaultPolicyD4DC2F12",
+        "JobCompleteRole81FD9028",
       ],
-      Metadata: {
-        cfn_nag: {
-          rules_to_suppress: [
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W58,
-              reason: Invalid warning: function has access to cloudwatch,
+              "id": "W58",
+              "reason": "Invalid warning: function has access to cloudwatch",
             },
             {
-              id: W89,
-              reason: Invalid warning: lambda not needed in VPC,
+              "id": "W89",
+              "reason": "Invalid warning: lambda not needed in VPC",
             },
             {
-              id: W92,
-              reason: Invalid warning: lambda does not need ReservedConcurrentExecutions,
+              "id": "W92",
+              "reason": "Invalid warning: lambda does not need ReservedConcurrentExecutions",
             },
           ],
         },
       },
-      Properties: {
-        Code: {
-          S3Bucket: {
-            Fn::Sub: cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region},
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          S3Key: [HASH REMOVED].zip,
+          "S3Key": "[HASH REMOVED].zip",
         },
-        Description: Triggered by EventBridge,processes completed MediaConvert jobs.,
-        Environment: {
-          Variables: {
-            CLOUDFRONT_DOMAIN: {
-              Fn::GetAtt: [
-                CloudFrontCloudFrontDistribution824F3346,
-                DomainName,
+        "Description": "Triggered by EventBridge,processes completed MediaConvert jobs.",
+        "Environment": {
+          "Variables": {
+            "CLOUDFRONT_DOMAIN": {
+              "Fn::GetAtt": [
+                "CloudFrontCloudFrontDistribution824F3346",
+                "DomainName",
               ],
             },
-            JOB_MANIFEST: jobs-manifest.json,
-            MEDIACONVERT_ENDPOINT: {
-              Fn::GetAtt: [
-                Endpoint,
-                Endpoint,
+            "JOB_MANIFEST": "jobs-manifest.json",
+            "MEDIACONVERT_ENDPOINT": {
+              "Fn::GetAtt": [
+                "Endpoint",
+                "Endpoint",
               ],
             },
-            METRICS: {
-              Fn::FindInMap: [
-                Send,
-                AnonymizedUsage,
-                Data,
+            "METRICS": {
+              "Fn::FindInMap": [
+                "Send",
+                "AnonymizedUsage",
+                "Data",
               ],
             },
-            SNS_TOPIC_ARN: {
-              Ref: NotificationSnsTopicB941FD22,
+            "SNS_TOPIC_ARN": {
+              "Ref": "NotificationSnsTopicB941FD22",
             },
-            SNS_TOPIC_NAME: {
-              Fn::GetAtt: [
-                NotificationSnsTopicB941FD22,
-                TopicName,
+            "SNS_TOPIC_NAME": {
+              "Fn::GetAtt": [
+                "NotificationSnsTopicB941FD22",
+                "TopicName",
               ],
             },
-            SOLUTION_ID: SO0146,
-            SOLUTION_IDENTIFIER: AwsSolution/SO0146/%%VERSION%%,
-            SOURCE_BUCKET: {
-              Ref: Source71E471F1,
+            "SOLUTION_ID": "SO0146",
+            "SOLUTION_IDENTIFIER": "AwsSolution/SO0146/%%VERSION%%",
+            "SOURCE_BUCKET": {
+              "Ref": "Source71E471F1",
             },
-            STACKNAME: {
-              Ref: AWS::StackName,
+            "STACKNAME": {
+              "Ref": "AWS::StackName",
             },
-            UUID: {
-              Fn::GetAtt: [
-                Endpoint,
-                UUID,
+            "UUID": {
+              "Fn::GetAtt": [
+                "Endpoint",
+                "UUID",
               ],
             },
-            VERSION: %%VERSION%%,
+            "VERSION": "%%VERSION%%",
           },
         },
-        Handler: index.handler,
-        Role: {
-          Fn::GetAtt: [
-            JobCompleteRole81FD9028,
-            Arn,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "JobCompleteRole81FD9028",
+            "Arn",
           ],
         },
-        Runtime: nodejs18.x,
-        Timeout: 30,
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
       },
-      Type: AWS::Lambda::Function,
+      "Type": "AWS::Lambda::Function",
     },
-    JobCompleteAwsEventsLambdaInvokePermission1ED79B615: {
-      DependsOn: [
-        JobCompletePolicyBBFD3892,
-        JobCompleteRoleDefaultPolicyD4DC2F12,
-        JobCompleteRole81FD9028,
+    "JobCompleteAwsEventsLambdaInvokePermission1ED79B615": {
+      "DependsOn": [
+        "JobCompletePolicyBBFD3892",
+        "JobCompleteRoleDefaultPolicyD4DC2F12",
+        "JobCompleteRole81FD9028",
       ],
-      Properties: {
-        Action: lambda:InvokeFunction,
-        FunctionName: {
-          Fn::GetAtt: [
-            JobComplete703682D0,
-            Arn,
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "JobComplete703682D0",
+            "Arn",
           ],
         },
-        Principal: events.amazonaws.com,
-        SourceArn: {
-          Fn::GetAtt: [
-            EventTriggerEventsRule76A88FDF,
-            Arn,
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "EventTriggerEventsRule76A88FDF",
+            "Arn",
           ],
         },
       },
-      Type: AWS::Lambda::Permission,
+      "Type": "AWS::Lambda::Permission",
     },
-    JobCompleteEventInvokeConfig692D89BE: {
-      DependsOn: [
-        JobCompletePolicyBBFD3892,
-        JobCompleteRoleDefaultPolicyD4DC2F12,
-        JobCompleteRole81FD9028,
+    "JobCompleteEventInvokeConfig692D89BE": {
+      "DependsOn": [
+        "JobCompletePolicyBBFD3892",
+        "JobCompleteRoleDefaultPolicyD4DC2F12",
+        "JobCompleteRole81FD9028",
       ],
-      Properties: {
-        FunctionName: {
-          Ref: JobComplete703682D0,
+      "Properties": {
+        "FunctionName": {
+          "Ref": "JobComplete703682D0",
         },
-        MaximumRetryAttempts: 0,
-        Qualifier: $LATEST,
+        "MaximumRetryAttempts": 0,
+        "Qualifier": "$LATEST",
       },
-      Type: AWS::Lambda::EventInvokeConfig,
+      "Type": "AWS::Lambda::EventInvokeConfig",
     },
-    JobCompletePolicyBBFD3892: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "JobCompletePolicyBBFD3892": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-IAM5,
-              reason: Resource ARNs are not generated at the time of policy creation,
+              "id": "AwsSolutions-IAM5",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
+            },
+          ],
+        },
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
             },
           ],
         },
       },
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: mediaconvert:GetJob,
-              Effect: Allow,
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Action": "mediaconvert:GetJob",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
-                    arn:,
+                    "arn:",
                     {
-                      Ref: AWS::Partition,
+                      "Ref": "AWS::Partition",
                     },
-                    :mediaconvert:,
+                    ":mediaconvert:",
                     {
-                      Ref: AWS::Region,
+                      "Ref": "AWS::Region",
                     },
-                    :,
+                    ":",
                     {
-                      Ref: AWS::AccountId,
+                      "Ref": "AWS::AccountId",
                     },
-                    :*,
+                    ":*",
                   ],
                 ],
               },
             },
             {
-              Action: [
-                s3:GetObject,
-                s3:PutObject,
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
               ],
-              Effect: Allow,
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
                     {
-                      Fn::GetAtt: [
-                        Source71E471F1,
-                        Arn,
+                      "Fn::GetAtt": [
+                        "Source71E471F1",
+                        "Arn",
                       ],
                     },
-                    /*,
+                    "/*",
                   ],
                 ],
               },
             },
             {
-              Action: [
-                logs:CreateLogGroup,
-                logs:CreateLogStream,
-                logs:PutLogEvents,
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
               ],
-              Effect: Allow,
-              Resource: *,
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: JobCompletePolicyBBFD3892,
-        Roles: [
+        "PolicyName": "JobCompletePolicyBBFD3892",
+        "Roles": [
           {
-            Ref: JobCompleteRole81FD9028,
+            "Ref": "JobCompleteRole81FD9028",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    JobCompleteRole81FD9028: {
-      Properties: {
-        AssumeRolePolicyDocument: {
-          Statement: [
+    "JobCompleteRole81FD9028": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              Action: sts:AssumeRole,
-              Effect: Allow,
-              Principal: {
-                Service: lambda.amazonaws.com,
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::IAM::Role,
+      "Type": "AWS::IAM::Role",
     },
-    JobCompleteRoleDefaultPolicyD4DC2F12: {
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+    "JobCompleteRoleDefaultPolicyD4DC2F12": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: sns:Publish,
-              Effect: Allow,
-              Resource: {
-                Ref: NotificationSnsTopicB941FD22,
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "NotificationSnsTopicB941FD22",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: JobCompleteRoleDefaultPolicyD4DC2F12,
-        Roles: [
+        "PolicyName": "JobCompleteRoleDefaultPolicyD4DC2F12",
+        "Roles": [
           {
-            Ref: JobCompleteRole81FD9028,
+            "Ref": "JobCompleteRole81FD9028",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    JobSubmitPolicy098DF0F8: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "JobSubmitPolicy098DF0F8": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-IAM5,
-              reason: Resource ARNs are not generated at the time of policy creation,
+              "id": "AwsSolutions-IAM5",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
+            },
+          ],
+        },
+        "cfn_nag": {
+          "rules_to_suppress": [
+            {
+              "id": "W12",
+              "reason": "Resource ARNs are not generated at the time of policy creation",
             },
           ],
         },
       },
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: iam:PassRole,
-              Effect: Allow,
-              Resource: {
-                Fn::GetAtt: [
-                  MediaConvertRole031A64A9,
-                  Arn,
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MediaConvertRole031A64A9",
+                  "Arn",
                 ],
               },
             },
             {
-              Action: mediaconvert:CreateJob,
-              Effect: Allow,
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Action": "mediaconvert:CreateJob",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
-                    arn:,
+                    "arn:",
                     {
-                      Ref: AWS::Partition,
+                      "Ref": "AWS::Partition",
                     },
-                    :mediaconvert:,
+                    ":mediaconvert:",
                     {
-                      Ref: AWS::Region,
+                      "Ref": "AWS::Region",
                     },
-                    :,
+                    ":",
                     {
-                      Ref: AWS::AccountId,
+                      "Ref": "AWS::AccountId",
                     },
-                    :*,
+                    ":*",
                   ],
                 ],
               },
             },
             {
-              Action: s3:GetObject,
-              Effect: Allow,
-              Resource: [
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": [
                 {
-                  Fn::GetAtt: [
-                    Source71E471F1,
-                    Arn,
+                  "Fn::GetAtt": [
+                    "Source71E471F1",
+                    "Arn",
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Source71E471F1,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Source71E471F1",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
             {
-              Action: [
-                logs:CreateLogGroup,
-                logs:CreateLogStream,
-                logs:PutLogEvents,
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
               ],
-              Effect: Allow,
-              Resource: *,
+              "Effect": "Allow",
+              "Resource": "*",
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: JobSubmitPolicy098DF0F8,
-        Roles: [
+        "PolicyName": "JobSubmitPolicy098DF0F8",
+        "Roles": [
           {
-            Ref: JobSubmitRole4FA8E972,
+            "Ref": "JobSubmitRole4FA8E972",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    JobSubmitRole4FA8E972: {
-      Properties: {
-        AssumeRolePolicyDocument: {
-          Statement: [
+    "JobSubmitRole4FA8E972": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              Action: sts:AssumeRole,
-              Effect: Allow,
-              Principal: {
-                Service: lambda.amazonaws.com,
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::IAM::Role,
+      "Type": "AWS::IAM::Role",
     },
-    JobSubmitRoleDefaultPolicy20E077D9: {
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+    "JobSubmitRoleDefaultPolicy20E077D9": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: sns:Publish,
-              Effect: Allow,
-              Resource: {
-                Ref: NotificationSnsTopicB941FD22,
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "NotificationSnsTopicB941FD22",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: JobSubmitRoleDefaultPolicy20E077D9,
-        Roles: [
+        "PolicyName": "JobSubmitRoleDefaultPolicy20E077D9",
+        "Roles": [
           {
-            Ref: JobSubmitRole4FA8E972,
+            "Ref": "JobSubmitRole4FA8E972",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    Logs6819BB44: {
-      DeletionPolicy: Retain,
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "Logs6819BB44": {
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-S1,
-              reason: Used to store access logs for other buckets,
+              "id": "AwsSolutions-S1",
+              "reason": "Used to store access logs for other buckets",
             },
             {
-              id: AwsSolutions-S10,
-              reason: Bucket is private and is not using HTTP,
+              "id": "AwsSolutions-S10",
+              "reason": "Bucket is private and is not using HTTP",
             },
           ],
         },
-        cfn_nag: {
-          rules_to_suppress: [
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W35,
-              reason: Logs bucket does not require logging configuration,
+              "id": "W35",
+              "reason": "Logs bucket does not require logging configuration",
             },
             {
-              id: W51,
-              reason: Logs bucket is private and does not require a bucket policy,
+              "id": "W51",
+              "reason": "Logs bucket is private and does not require a bucket policy",
             },
           ],
         },
       },
-      Properties: {
-        AccessControl: LogDeliveryWrite,
-        BucketEncryption: {
-          ServerSideEncryptionConfiguration: [
+      "Properties": {
+        "AccessControl": "LogDeliveryWrite",
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
             {
-              ServerSideEncryptionByDefault: {
-                SSEAlgorithm: AES256,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        OwnershipControls: {
-          Rules: [
+        "OwnershipControls": {
+          "Rules": [
             {
-              ObjectOwnership: ObjectWriter,
+              "ObjectOwnership": "ObjectWriter",
             },
           ],
         },
-        PublicAccessBlockConfiguration: {
-          BlockPublicAcls: true,
-          BlockPublicPolicy: true,
-          IgnorePublicAcls: true,
-          RestrictPublicBuckets: true,
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
         },
-        VersioningConfiguration: {
-          Status: Enabled,
+        "VersioningConfiguration": {
+          "Status": "Enabled",
         },
       },
-      Type: AWS::S3::Bucket,
-      UpdateReplacePolicy: Retain,
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
     },
-    LogsPolicy90DB40C9: {
-      Properties: {
-        Bucket: {
-          Ref: Logs6819BB44,
+    "LogsPolicy90DB40C9": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "Logs6819BB44",
         },
-        PolicyDocument: {
-          Statement: [
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: s3:*,
-              Condition: {
-                Bool: {
-                  aws:SecureTransport: false,
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
                 },
               },
-              Effect: Deny,
-              Principal: {
-                AWS: *,
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
               },
-              Resource: [
+              "Resource": [
                 {
-                  Fn::GetAtt: [
-                    Logs6819BB44,
-                    Arn,
+                  "Fn::GetAtt": [
+                    "Logs6819BB44",
+                    "Arn",
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Logs6819BB44,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Logs6819BB44",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::S3::BucketPolicy,
+      "Type": "AWS::S3::BucketPolicy",
     },
-    MediaConvertRole031A64A9: {
-      Properties: {
-        AssumeRolePolicyDocument: {
-          Statement: [
+    "MediaConvertRole031A64A9": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
             {
-              Action: sts:AssumeRole,
-              Effect: Allow,
-              Principal: {
-                Service: mediaconvert.amazonaws.com,
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "mediaconvert.amazonaws.com",
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::IAM::Role,
+      "Type": "AWS::IAM::Role",
     },
-    MediaconvertPolicy9E3026EC: {
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "MediaconvertPolicy9E3026EC": {
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-IAM5,
-              reason: /* required to get/put objects to S3,
+              "id": "AwsSolutions-IAM5",
+              "reason": "/* required to get/put objects to S3",
             },
           ],
         },
       },
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: [
-                s3:GetObject,
-                s3:PutObject,
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
               ],
-              Effect: Allow,
-              Resource: [
+              "Effect": "Allow",
+              "Resource": [
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Source71E471F1,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Source71E471F1",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Destination920A3C57,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Destination920A3C57",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
             {
-              Action: execute-api:Invoke,
-              Effect: Allow,
-              Resource: {
-                Fn::Join: [
-                  ,
+              "Action": "execute-api:Invoke",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
                   [
-                    arn:,
+                    "arn:",
                     {
-                      Ref: AWS::Partition,
+                      "Ref": "AWS::Partition",
                     },
-                    :execute-api:,
+                    ":execute-api:",
                     {
-                      Ref: AWS::Region,
+                      "Ref": "AWS::Region",
                     },
-                    :,
+                    ":",
                     {
-                      Ref: AWS::AccountId,
+                      "Ref": "AWS::AccountId",
                     },
-                    :*,
+                    ":*",
                   ],
                 ],
               },
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        PolicyName: MediaconvertPolicy9E3026EC,
-        Roles: [
+        "PolicyName": "MediaconvertPolicy9E3026EC",
+        "Roles": [
           {
-            Ref: MediaConvertRole031A64A9,
+            "Ref": "MediaConvertRole031A64A9",
           },
         ],
       },
-      Type: AWS::IAM::Policy,
+      "Type": "AWS::IAM::Policy",
     },
-    NotificationSnsTopicB941FD22: {
-      Properties: {
-        KmsMasterKeyId: {
-          Fn::Join: [
-            ,
+    "NotificationSnsTopicB941FD22": {
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::Join": [
+            "",
             [
-              arn:,
+              "arn:",
               {
-                Ref: AWS::Partition,
+                "Ref": "AWS::Partition",
               },
-              :kms:,
+              ":kms:",
               {
-                Ref: AWS::Region,
+                "Ref": "AWS::Region",
               },
-              :,
+              ":",
               {
-                Ref: AWS::AccountId,
+                "Ref": "AWS::AccountId",
               },
-              :alias/aws/sns,
+              ":alias/aws/sns",
             ],
           ],
         },
       },
-      Type: AWS::SNS::Topic,
+      "Type": "AWS::SNS::Topic",
     },
-    NotificationSnsTopicPolicy4027082A: {
-      Properties: {
-        PolicyDocument: {
-          Statement: [
+    "NotificationSnsTopicPolicy4027082A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: [
-                SNS:Publish,
-                SNS:RemovePermission,
-                SNS:SetTopicAttributes,
-                SNS:DeleteTopic,
-                SNS:ListSubscriptionsByTopic,
-                SNS:GetTopicAttributes,
-                SNS:Receive,
-                SNS:AddPermission,
-                SNS:Subscribe,
+              "Action": [
+                "SNS:Publish",
+                "SNS:RemovePermission",
+                "SNS:SetTopicAttributes",
+                "SNS:DeleteTopic",
+                "SNS:ListSubscriptionsByTopic",
+                "SNS:GetTopicAttributes",
+                "SNS:Receive",
+                "SNS:AddPermission",
+                "SNS:Subscribe",
               ],
-              Condition: {
-                StringEquals: {
-                  AWS:SourceOwner: {
-                    Ref: AWS::AccountId,
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceOwner": {
+                    "Ref": "AWS::AccountId",
                   },
                 },
               },
-              Effect: Allow,
-              Principal: {
-                AWS: {
-                  Fn::Join: [
-                    ,
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
                     [
-                      arn:,
+                      "arn:",
                       {
-                        Ref: AWS::Partition,
+                        "Ref": "AWS::Partition",
                       },
-                      :iam::,
+                      ":iam::",
                       {
-                        Ref: AWS::AccountId,
+                        "Ref": "AWS::AccountId",
                       },
-                      :root,
+                      ":root",
                     ],
                   ],
                 },
               },
-              Resource: {
-                Ref: NotificationSnsTopicB941FD22,
+              "Resource": {
+                "Ref": "NotificationSnsTopicB941FD22",
               },
-              Sid: TopicOwnerOnlyAccess,
+              "Sid": "TopicOwnerOnlyAccess",
             },
             {
-              Action: [
-                SNS:Publish,
-                SNS:RemovePermission,
-                SNS:SetTopicAttributes,
-                SNS:DeleteTopic,
-                SNS:ListSubscriptionsByTopic,
-                SNS:GetTopicAttributes,
-                SNS:Receive,
-                SNS:AddPermission,
-                SNS:Subscribe,
+              "Action": [
+                "SNS:Publish",
+                "SNS:RemovePermission",
+                "SNS:SetTopicAttributes",
+                "SNS:DeleteTopic",
+                "SNS:ListSubscriptionsByTopic",
+                "SNS:GetTopicAttributes",
+                "SNS:Receive",
+                "SNS:AddPermission",
+                "SNS:Subscribe",
               ],
-              Condition: {
-                Bool: {
-                  aws:SecureTransport: false,
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
                 },
               },
-              Effect: Deny,
-              Principal: {
-                AWS: *,
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
               },
-              Resource: {
-                Ref: NotificationSnsTopicB941FD22,
+              "Resource": {
+                "Ref": "NotificationSnsTopicB941FD22",
               },
-              Sid: HttpsOnly,
+              "Sid": "HttpsOnly",
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
-        Topics: [
+        "Topics": [
           {
-            Ref: NotificationSnsTopicB941FD22,
+            "Ref": "NotificationSnsTopicB941FD22",
           },
         ],
       },
-      Type: AWS::SNS::TopicPolicy,
+      "Type": "AWS::SNS::TopicPolicy",
     },
-    NotificationSnsTopicTokenSubscription1209F3ABA: {
-      Properties: {
-        Endpoint: {
-          Ref: emailAddress,
+    "NotificationSnsTopicTokenSubscription1209F3ABA": {
+      "Properties": {
+        "Endpoint": {
+          "Ref": "emailAddress",
         },
-        Protocol: email,
-        TopicArn: {
-          Ref: NotificationSnsTopicB941FD22,
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "NotificationSnsTopicB941FD22",
         },
       },
-      Type: AWS::SNS::Subscription,
+      "Type": "AWS::SNS::Subscription",
     },
-    S3Config: {
-      DeletionPolicy: Delete,
-      Properties: {
-        LambdaArn: {
-          Fn::GetAtt: [
-            jobSubmitB391E42F,
-            Arn,
+    "S3Config": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "LambdaArn": {
+          "Fn::GetAtt": [
+            "jobSubmitB391E42F",
+            "Arn",
           ],
         },
-        ServiceToken: {
-          Fn::GetAtt: [
-            CustomResource8CDCD7A7,
-            Arn,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResource8CDCD7A7",
+            "Arn",
           ],
         },
-        SourceBucket: {
-          Ref: Source71E471F1,
+        "SourceBucket": {
+          "Ref": "Source71E471F1",
         },
       },
-      Type: AWS::CloudFormation::CustomResource,
-      UpdateReplacePolicy: Delete,
+      "Type": "AWS::CloudFormation::CustomResource",
+      "UpdateReplacePolicy": "Delete",
     },
-    Source71E471F1: {
-      DeletionPolicy: Retain,
-      Metadata: {
-        cdk_nag: {
-          rules_to_suppress: [
+    "Source71E471F1": {
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "cdk_nag": {
+          "rules_to_suppress": [
             {
-              id: AwsSolutions-S10,
-              reason: Bucket is private and is not using HTTP,
+              "id": "AwsSolutions-S10",
+              "reason": "Bucket is private and is not using HTTP",
             },
           ],
         },
-        cfn_nag: {
-          rules_to_suppress: [
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W51,
-              reason: source bucket is private and does not require a bucket policy,
+              "id": "W51",
+              "reason": "source bucket is private and does not require a bucket policy",
             },
           ],
         },
       },
-      Properties: {
-        BucketEncryption: {
-          ServerSideEncryptionConfiguration: [
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
             {
-              ServerSideEncryptionByDefault: {
-                SSEAlgorithm: AES256,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256",
               },
             },
           ],
         },
-        LoggingConfiguration: {
-          DestinationBucketName: {
-            Ref: Logs6819BB44,
+        "LoggingConfiguration": {
+          "DestinationBucketName": {
+            "Ref": "Logs6819BB44",
           },
-          LogFilePrefix: source-bucket-logs/,
+          "LogFilePrefix": "source-bucket-logs/",
         },
-        PublicAccessBlockConfiguration: {
-          BlockPublicAcls: true,
-          BlockPublicPolicy: true,
-          IgnorePublicAcls: true,
-          RestrictPublicBuckets: true,
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true,
         },
-        VersioningConfiguration: {
-          Status: Enabled,
+        "VersioningConfiguration": {
+          "Status": "Enabled",
         },
       },
-      Type: AWS::S3::Bucket,
-      UpdateReplacePolicy: Retain,
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
     },
-    SourcePolicyE5AB5F73: {
-      Properties: {
-        Bucket: {
-          Ref: Source71E471F1,
+    "SourcePolicyE5AB5F73": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "Source71E471F1",
         },
-        PolicyDocument: {
-          Statement: [
+        "PolicyDocument": {
+          "Statement": [
             {
-              Action: s3:*,
-              Condition: {
-                Bool: {
-                  aws:SecureTransport: false,
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false",
                 },
               },
-              Effect: Deny,
-              Principal: {
-                AWS: *,
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*",
               },
-              Resource: [
+              "Resource": [
                 {
-                  Fn::GetAtt: [
-                    Source71E471F1,
-                    Arn,
+                  "Fn::GetAtt": [
+                    "Source71E471F1",
+                    "Arn",
                   ],
                 },
                 {
-                  Fn::Join: [
-                    ,
+                  "Fn::Join": [
+                    "",
                     [
                       {
-                        Fn::GetAtt: [
-                          Source71E471F1,
-                          Arn,
+                        "Fn::GetAtt": [
+                          "Source71E471F1",
+                          "Arn",
                         ],
                       },
-                      /*,
+                      "/*",
                     ],
                   ],
                 },
               ],
             },
           ],
-          Version: 2012-10-17,
+          "Version": "2012-10-17",
         },
       },
-      Type: AWS::S3::BucketPolicy,
+      "Type": "AWS::S3::BucketPolicy",
     },
-    jobSubmitB391E42F: {
-      DependsOn: [
-        JobSubmitPolicy098DF0F8,
-        JobSubmitRoleDefaultPolicy20E077D9,
-        JobSubmitRole4FA8E972,
+    "jobSubmitB391E42F": {
+      "DependsOn": [
+        "JobSubmitPolicy098DF0F8",
+        "JobSubmitRoleDefaultPolicy20E077D9",
+        "JobSubmitRole4FA8E972",
       ],
-      Metadata: {
-        cfn_nag: {
-          rules_to_suppress: [
+      "Metadata": {
+        "cfn_nag": {
+          "rules_to_suppress": [
             {
-              id: W58,
-              reason: Invalid warning: function has access to cloudwatch,
+              "id": "W58",
+              "reason": "Invalid warning: function has access to cloudwatch",
             },
             {
-              id: W89,
-              reason: Invalid warning: lambda not needed in VPC,
+              "id": "W89",
+              "reason": "Invalid warning: lambda not needed in VPC",
             },
             {
-              id: W92,
-              reason: Invalid warning: lambda does not need ReservedConcurrentExecutions,
+              "id": "W92",
+              "reason": "Invalid warning: lambda does not need ReservedConcurrentExecutions",
             },
           ],
         },
       },
-      Properties: {
-        Code: {
-          S3Bucket: {
-            Fn::Sub: cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region},
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::Sub": "cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}",
           },
-          S3Key: [HASH REMOVED].zip,
+          "S3Key": "[HASH REMOVED].zip",
         },
-        Description: Submits an Encoding job to MediaConvert,
-        Environment: {
-          Variables: {
-            DESTINATION_BUCKET: {
-              Ref: Destination920A3C57,
+        "Description": "Submits an Encoding job to MediaConvert",
+        "Environment": {
+          "Variables": {
+            "DESTINATION_BUCKET": {
+              "Ref": "Destination920A3C57",
             },
-            JOB_SETTINGS: job-settings.json,
-            MEDIACONVERT_ENDPOINT: {
-              Fn::GetAtt: [
-                Endpoint,
-                Endpoint,
+            "JOB_SETTINGS": "job-settings.json",
+            "MEDIACONVERT_ENDPOINT": {
+              "Fn::GetAtt": [
+                "Endpoint",
+                "Endpoint",
               ],
             },
-            MEDIACONVERT_ROLE: {
-              Fn::GetAtt: [
-                MediaConvertRole031A64A9,
-                Arn,
+            "MEDIACONVERT_ROLE": {
+              "Fn::GetAtt": [
+                "MediaConvertRole031A64A9",
+                "Arn",
               ],
             },
-            SNS_TOPIC_ARN: {
-              Ref: NotificationSnsTopicB941FD22,
+            "SNS_TOPIC_ARN": {
+              "Ref": "NotificationSnsTopicB941FD22",
             },
-            SNS_TOPIC_NAME: {
-              Fn::GetAtt: [
-                NotificationSnsTopicB941FD22,
-                TopicName,
+            "SNS_TOPIC_NAME": {
+              "Fn::GetAtt": [
+                "NotificationSnsTopicB941FD22",
+                "TopicName",
               ],
             },
-            SOLUTION_ID: SO0146,
-            SOLUTION_IDENTIFIER: AwsSolution/SO0146/%%VERSION%%,
-            STACKNAME: {
-              Ref: AWS::StackName,
+            "SOLUTION_ID": "SO0146",
+            "SOLUTION_IDENTIFIER": "AwsSolution/SO0146/%%VERSION%%",
+            "STACKNAME": {
+              "Ref": "AWS::StackName",
             },
           },
         },
-        Handler: index.handler,
-        Role: {
-          Fn::GetAtt: [
-            JobSubmitRole4FA8E972,
-            Arn,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "JobSubmitRole4FA8E972",
+            "Arn",
           ],
         },
-        Runtime: nodejs18.x,
-        Timeout: 30,
+        "Runtime": "nodejs18.x",
+        "Timeout": 30,
       },
-      Type: AWS::Lambda::Function,
+      "Type": "AWS::Lambda::Function",
     },
-    jobSubmitEventInvokeConfig0385F502: {
-      DependsOn: [
-        JobSubmitPolicy098DF0F8,
-        JobSubmitRoleDefaultPolicy20E077D9,
-        JobSubmitRole4FA8E972,
+    "jobSubmitEventInvokeConfig0385F502": {
+      "DependsOn": [
+        "JobSubmitPolicy098DF0F8",
+        "JobSubmitRoleDefaultPolicy20E077D9",
+        "JobSubmitRole4FA8E972",
       ],
-      Properties: {
-        FunctionName: {
-          Ref: jobSubmitB391E42F,
+      "Properties": {
+        "FunctionName": {
+          "Ref": "jobSubmitB391E42F",
         },
-        MaximumRetryAttempts: 0,
-        Qualifier: $LATEST,
+        "MaximumRetryAttempts": 0,
+        "Qualifier": "$LATEST",
       },
-      Type: AWS::Lambda::EventInvokeConfig,
+      "Type": "AWS::Lambda::EventInvokeConfig",
     },
-    jobSubmitS3Trigger3DEB8D7C: {
-      DependsOn: [
-        JobSubmitPolicy098DF0F8,
-        JobSubmitRoleDefaultPolicy20E077D9,
-        JobSubmitRole4FA8E972,
+    "jobSubmitS3Trigger3DEB8D7C": {
+      "DependsOn": [
+        "JobSubmitPolicy098DF0F8",
+        "JobSubmitRoleDefaultPolicy20E077D9",
+        "JobSubmitRole4FA8E972",
       ],
-      Properties: {
-        Action: lambda:InvokeFunction,
-        FunctionName: {
-          Fn::GetAtt: [
-            jobSubmitB391E42F,
-            Arn,
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "jobSubmitB391E42F",
+            "Arn",
           ],
         },
-        Principal: s3.amazonaws.com,
-        SourceAccount: {
-          Ref: AWS::AccountId,
+        "Principal": "s3.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId",
         },
       },
-      Type: AWS::Lambda::Permission,
+      "Type": "AWS::Lambda::Permission",
     },
   },
 }

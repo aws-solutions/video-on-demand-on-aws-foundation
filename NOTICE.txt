@@ -16,3 +16,12 @@ axios under the Massachusetts Institute of Technology (MIT) license
 axios-mock-adapter under the Massachusetts Institute of Technology (MIT) license
 uuid under the Massachusetts Institute of Technology (MIT) license
 jest under the Massachusetts Institute of Technology (MIT) license
+aws-cdk-lib under the Apache License Version 2.0
+constructs under the Apache License Version 2.0
+@aws-solutions-constructs/aws-cloudfront-s3 under the Apache License Version 2.0
+@aws-solutions-constructs/aws-eventbridge-lambda under the Apache License Version 2.0
+@aws-solutions-constructs/aws-lambda-sns under the Apache License Version 2.0
+@aws-cdk/aws-servicecatalogappregistry-alpha under the Apache License Version 2.0
+cdk-nag under the Apache License Version 2.0
+source-map-support under the Massachusetts Institute of Technology (MIT) license
+lodash under the Massachusetts Institute of Technology (MIT) license
