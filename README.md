@@ -1,4 +1,9 @@
-# Video on Demand on AWS Foundation
+# Mesilinka Media Archives
+
+Combines the AWS VOD workflow with a Wordpress front end.  While videos get encoded, posts also get created directly in Wordpress.  Also adds photo capabilities.
+
+
+## (Forked from) Video on Demand on AWS Foundation
 
 _Deploy a customizable architecture to build a video-on-demand workflow._
 
@@ -91,6 +96,7 @@ For more detailed instructions, see the [solution implementation guide][IG].
 * An Amazon SNS topic to send notifications of completed jobs.
 * Amazon CloudFront configured with the destination S3 bucket as the origin for global distribution
   of the transcoded video content.
+
 
 ## Creating a custom build
 
