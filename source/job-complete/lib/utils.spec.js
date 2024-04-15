@@ -5,53 +5,49 @@
 const axios = require("axios");
 const utils = require("./utils.js");
 const test = require("./utils.test.js");
+const { mockClient } = require("aws-sdk-client-mock");
+const { 
+    MediaConvertClient,
+    GetJobCommand
+} = require("@aws-sdk/client-mediaconvert");
+const { 
+    S3Client,
+    GetObjectCommand,
+    PutObjectCommand
+} = require("@aws-sdk/client-s3");
+const { 
+    SNSClient,
+    PublishCommand
+} = require("@aws-sdk/client-sns");
 /**
  * setup
  */
-const mockGetObject = jest.fn();
-const mockPutObject = jest.fn();
-const mockSnsPublish = jest.fn();
-const mockGetJob = jest.fn();
-jest.mock("aws-sdk", () => {
-  return {
-    S3: jest.fn(() => ({
-      getObject: mockGetObject,
-      putObject: mockPutObject,
-    })),
-    SNS: jest.fn(() => ({
-      publish: mockSnsPublish,
-    })),
-    MediaConvert: jest.fn(() => ({
-      getJob: mockGetJob,
-    })),
-  };
-});
+const mediaConvertClientMock = mockClient(MediaConvertClient);
+const s3ClientMock = mockClient(S3Client);
+const snsClientMock = mockClient(SNSClient);
 jest.mock("axios");
+
+/**
+ * Mock Data
+ */
+const emptyJobsData = {
+  "Body": {
+    transformToString: () => ('{\n"Jobs": []\n}')
+  }
+};
+const jobsData = {
+  "Body": {
+    transformToString: () => ('{\n"Jobs":[\n{\n"Id":"123",\n"Input":{}\n}\n]\n}')
+  }
+};
+
 /**
  * Test
  */
 describe("Utils WriteManifest", () => {
-  beforeEach(() => {
-    mockGetObject.mockReset();
-    mockPutObject.mockReset();
-  });
   it("writeManifest Input Success test", async () => {
-    mockGetObject.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve({
-            Body: '{\n"Jobs": []\n}',
-          });
-        },
-      };
-    });
-    mockPutObject.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve();
-        },
-      };
-    });
+    s3ClientMock.on(GetObjectCommand).resolves(emptyJobsData);
+    s3ClientMock.on(PutObjectCommand).resolves();
     let data = {
       detail: {
         jobId: "123",
@@ -65,52 +61,22 @@ describe("Utils WriteManifest", () => {
     await utils.writeManifest("bucket", "manifestFile", data);
   });
   it("writeManifest Job Success test", async () => {
-    mockGetObject.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve({
-            Body: '{\n"Jobs":[\n{\n"Id":"123",\n"Input":{}\n}\n]\n}',
-          });
-        },
-      };
-    });
-    mockPutObject.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve();
-        },
-      };
-    });
+    s3ClientMock.on(GetObjectCommand).resolves(jobsData);
     let data = { jobId: "123", Outputs: {} };
     await utils.writeManifest("bucket", "manifestFile", data);
   });
   it("writeManifest Failed test", async () => {
-    mockGetObject.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.reject("GET FAILED");
-        },
-      };
-    });
+    s3ClientMock.on(GetObjectCommand).rejects("GET FAILED");
     await utils.writeManifest("bucket", "manifestFile", "data").catch((err) => {
-      expect(err.Error.toString()).toEqual("GET FAILED");
+      expect(err.Error.toString()).toEqual("Error: GET FAILED");
       expect(err.message).toEqual('Failed to update the jobs-manifest.json, please check its accessible in the root of the source S3 bucket');
       expect(err.Job).toEqual('data');;
     });
   });
 });
 describe("Utils ProcessOutputs", () => {
-  beforeEach(() => {
-    mockGetJob.mockReset();
-  });
   it("ProcessOutputs Success test", async () => {
-    mockGetJob.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve({});
-        },
-      };
-    });
+    mediaConvertClientMock.on(GetJobCommand).resolves({});
     await utils.processJobDetails(
       "endpoint",
       "cloudfrontUrl",
@@ -121,55 +87,27 @@ describe("Utils ProcessOutputs", () => {
     );
   });
   it("ProcessOutputs Failed test", async () => {
-    mockGetJob.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.reject("GET JOB FAILED");
-        },
-      };
-    });
+    mediaConvertClientMock.on(GetJobCommand).rejects("GET JOB FAILED");
     await utils
       .processJobDetails("endpoint", "cloudfrontUrl", test.cwComplete)
       .catch((err) => {
-        expect(err.toString()).toEqual("GET JOB FAILED");
+        expect(err.toString()).toEqual("Error: GET JOB FAILED");
       });
   });
 });
 
 describe("Utils SendSns", () => {
-  beforeEach(() => {
-    mockSnsPublish.mockReset();
-  });
   it("SendSns Success test", async () => {
-    mockSnsPublish.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve();
-        },
-      };
-    });
+    snsClientMock.on(PublishCommand).resolves();
     await utils.sendSns("topic", "stackName", "COMPLETE", test.snsData);
   });
   it("SendSns Success test", async () => {
-    mockSnsPublish.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.resolve();
-        },
-      };
-    });
     await utils.sendSns("topic", "stackName", "PROCESSING ERROR", test.snsData);
   });
   it("SendSns Failed test", async () => {
-    mockSnsPublish.mockImplementation(() => {
-      return {
-        promise() {
-          return Promise.reject("SEND FAILED");
-        },
-      };
-    });
+    snsClientMock.on(PublishCommand).rejects("SEND FAILED");
     await utils.sendSns("topic", "stackName", "ERROR", test.snsData).catch((err) => {
-      expect(err.toString()).toEqual("SEND FAILED");
+      expect(err.toString()).toEqual("Error: SEND FAILED");
     });
   });
 });

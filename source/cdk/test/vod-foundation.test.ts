@@ -1,29 +1,25 @@
+/**
+ * Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *  SPDX-License-Identifier: Apache-2.0
+ */
+
 import { SynthUtils } from '@aws-cdk/assert';
 import { Stack } from 'aws-cdk-lib';
 import * as VodStack from '../lib/vod-foundation-stack';
 
+const regexHashedFileName = /[A-Fa-f0-9]{64}(\.[a-z]{3,4})$/;
+const replaceHashedName = "[HASH REMOVED]$1";
+
 expect.addSnapshotSerializer({
-    test: (val) => typeof val === 'string',
-    print: (val) => {
-        const valueReplacements = [
-            {
-                regex: /AssetParameters([A-Fa-f0-9]{64})(\w+)/,
-                replacementValue: 'AssetParameters[HASH REMOVED]'
-            },
-            {
-                regex: /(\w+ for asset)\s?(version)?\s?"([A-Fa-f0-9]{64})"/,
-                replacementValue: '$1 [HASH REMOVED]'
-            }
-        ];
-        return `${valueReplacements.reduce(
-            (output, replacement) => output.replace(replacement.regex, replacement.replacementValue),
-            val as string
-        )}`;
+    test: (val) => typeof val === 'string' && regexHashedFileName.test(val),
+    serialize: (val, config, indentation, depth, refs, printer) => {
+        const replaced = val.replace(regexHashedFileName, replaceHashedName);
+        return printer(replaced, config, indentation, depth, refs);
     }
 });
 
 test('VOD Foundation Stack Test', () => {
     const stack = new Stack();
-    new VodStack.VodFoundation(stack, 'VOD');
-    expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+    const vodTest = new VodStack.VodFoundation(stack, 'VOD');
+    expect(SynthUtils.toCloudFormation(vodTest)).toMatchSnapshot();
 });
