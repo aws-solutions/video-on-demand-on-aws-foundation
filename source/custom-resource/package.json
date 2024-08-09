@@ -16,8 +16,8 @@
   "devDependencies": {
     "jest": "^29.6.4",
     "aws-sdk-client-mock": "3.0.0",
-    "@aws-sdk/client-mediaconvert": "^3.398.0",
-    "@aws-sdk/client-s3": "^3.398.0"
+    "@aws-sdk/client-mediaconvert": "^3.622.0",
+    "@aws-sdk/client-s3": "^3.622.0"
   },
   "private": true,
   "author": {
