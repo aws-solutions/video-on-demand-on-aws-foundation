@@ -207,6 +207,10 @@ exports[`VOD Foundation Stack Test 1`] = `
               "id": "AwsSolutions-CFR4",
               "reason": "CloudFront automatically sets the security policy to TLSv1 when the distribution uses the CloudFront domain name",
             },
+            {
+              "id": "AwsSolutions-CFR7",
+              "reason": "False alarm. The AWS-cloudfront-s3 solutions construct provides Origin-Access-Control by default.",
+            },
           ],
         },
         "cfn_nag": {
@@ -259,18 +263,14 @@ exports[`VOD Foundation Stack Test 1`] = `
                 ],
               },
               "Id": "VODCloudFrontCloudFrontDistributionOrigin1D96CD58B",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "CloudFrontCloudFrontOac36AB834C",
+                  "Id",
+                ],
+              },
               "S3OriginConfig": {
-                "OriginAccessIdentity": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "origin-access-identity/cloudfront/",
-                      {
-                        "Ref": "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A",
-                      },
-                    ],
-                  ],
-                },
+                "OriginAccessIdentity": "",
               },
             },
           ],
@@ -278,13 +278,37 @@ exports[`VOD Foundation Stack Test 1`] = `
       },
       "Type": "AWS::CloudFront::Distribution",
     },
-    "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A": {
+    "CloudFrontCloudFrontOac36AB834C": {
       "Properties": {
-        "CloudFrontOriginAccessIdentityConfig": {
-          "Comment": "Identity for VODCloudFrontCloudFrontDistributionOrigin1D96CD58B",
+        "OriginAccessControlConfig": {
+          "Description": "Origin access control provisioned by aws-cloudfront-s3",
+          "Name": {
+            "Fn::Join": [
+              "",
+              [
+                "aws-cloudfront-s3-ClouFront-",
+                {
+                  "Fn::Select": [
+                    2,
+                    {
+                      "Fn::Split": [
+                        "/",
+                        {
+                          "Ref": "AWS::StackId",
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            ],
+          },
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4",
         },
       },
-      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Type": "AWS::CloudFront::OriginAccessControl",
     },
     "CustomResource8CDCD7A7": {
       "DependsOn": [
@@ -329,7 +353,7 @@ exports[`VOD Foundation Stack Test 1`] = `
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 30,
       },
       "Type": "AWS::Lambda::Function",
@@ -561,14 +585,32 @@ exports[`VOD Foundation Stack Test 1`] = `
             },
             {
               "Action": "s3:GetObject",
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition",
+                        },
+                        ":cloudfront::",
+                        {
+                          "Ref": "AWS::AccountId",
+                        },
+                        ":distribution/",
+                        {
+                          "Ref": "CloudFrontCloudFrontDistribution824F3346",
+                        },
+                      ],
+                    ],
+                  },
+                },
+              },
               "Effect": "Allow",
               "Principal": {
-                "CanonicalUser": {
-                  "Fn::GetAtt": [
-                    "CloudFrontCloudFrontDistributionOrigin1S3Origin17B88F1A",
-                    "S3CanonicalUserId",
-                  ],
-                },
+                "Service": "cloudfront.amazonaws.com",
               },
               "Resource": {
                 "Fn::Join": [
@@ -728,7 +770,7 @@ exports[`VOD Foundation Stack Test 1`] = `
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 30,
       },
       "Type": "AWS::Lambda::Function",
@@ -957,7 +999,10 @@ exports[`VOD Foundation Stack Test 1`] = `
               },
             },
             {
-              "Action": "s3:GetObject",
+              "Action": [
+                "s3:GetObject",
+                "s3:ListBucket",
+              ],
               "Effect": "Allow",
               "Resource": [
                 {
@@ -1565,7 +1610,7 @@ exports[`VOD Foundation Stack Test 1`] = `
             "Arn",
           ],
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Timeout": 30,
       },
       "Type": "AWS::Lambda::Function",

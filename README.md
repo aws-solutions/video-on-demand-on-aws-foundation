@@ -66,8 +66,8 @@ account.
 ## Prerequisites
 
 * [AWS Command Line Interface](https://aws.amazon.com/cli/)
-* Node.js 18.x or later
-* aws-cdk version 2.93.0
+* Node.js 22.x or later
+* aws-cdk version 2.200.0
 
 ## How to deploy the solution
 
