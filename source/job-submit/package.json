@@ -1,10 +1,10 @@
 {
-  "name": "vod-custom-resource",
-  "version": "1.3.8",
+  "name": "vod-job-submit",
+  "version": "1.3.9",
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
-  "description": "cfn custom resources for video on demand",
+  "description": "Job submit lambda for video on demand",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage"

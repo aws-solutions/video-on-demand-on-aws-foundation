@@ -194,7 +194,10 @@ export class VodFoundation extends cdk.Stack {
                 }, {
                     id: 'AwsSolutions-CFR4', //same as cfn_nag rule W70
                     reason: 'CloudFront automatically sets the security policy to TLSv1 when the distribution uses the CloudFront domain name'
-                }
+                }, {
+                    "id": "AwsSolutions-CFR7",
+                    "reason": "False alarm. The AWS-cloudfront-s3 solutions construct provides Origin-Access-Control by default.",
+                },
             ]
         );
         NagSuppressions.addResourceSuppressions(
@@ -277,7 +280,7 @@ export class VodFoundation extends cdk.Stack {
         );
 
         const customResourceLambda = new lambda.Function(this, 'CustomResource', {
-            runtime: lambda.Runtime.NODEJS_18_X,
+            runtime: lambda.Runtime.NODEJS_22_X,
             handler: 'index.handler',
             description: 'CFN Custom resource to copy assets to S3 and get the MediaConvert endpoint',
             environment: {
@@ -331,7 +334,7 @@ export class VodFoundation extends cdk.Stack {
                     resources: [`arn:${cdk.Aws.PARTITION}:mediaconvert:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:*`]
                 }),
                 new iam.PolicyStatement({
-                    actions: ["s3:GetObject"],
+                    actions: ["s3:GetObject", "s3:ListBucket"],
                     resources: [source.bucketArn, `${source.bucketArn}/*`]
                 }),
                 new iam.PolicyStatement({
@@ -358,7 +361,7 @@ export class VodFoundation extends cdk.Stack {
 
         const jobSubmit = new lambda.Function(this, 'jobSubmit', {
             code: lambda.Code.fromAsset(`../job-submit`),
-            runtime: lambda.Runtime.NODEJS_18_X,
+            runtime: lambda.Runtime.NODEJS_22_X,
             handler: 'index.handler',
             timeout: cdk.Duration.seconds(30),
             retryAttempts:0,
@@ -446,7 +449,7 @@ export class VodFoundation extends cdk.Stack {
 
         const jobComplete = new lambda.Function(this, 'JobComplete', {
             code: lambda.Code.fromAsset(`../job-complete`),
-            runtime: lambda.Runtime.NODEJS_18_X,
+            runtime: lambda.Runtime.NODEJS_22_X,
             handler: 'index.handler',
             timeout: cdk.Duration.seconds(30),
             retryAttempts:0,
