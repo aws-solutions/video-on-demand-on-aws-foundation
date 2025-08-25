@@ -544,32 +544,6 @@ export class VodFoundation extends cdk.Stack {
         snsTopic.snsTopic.addSubscription(new subs.EmailSubscription(adminEmail.valueAsString))
 
         /**
-        * AppRegistry
-        */
-        const applicationName = `vod-foundation-${cdk.Aws.REGION}-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.STACK_NAME}`;
-        const attributeGroup = new appreg.AttributeGroup(this, 'AppRegistryAttributeGroup', {
-            attributeGroupName: `${cdk.Aws.REGION}-${cdk.Aws.STACK_NAME}`,
-            description: "Attribute group for solution information.",
-            attributes: {
-                ApplicationType: 'AWS-Solutions',
-                SolutionVersion: solutionVersion,
-                SolutionID: solutionId,
-                SolutionName: solutionName
-            }
-        });
-        const appRegistry = new appreg.Application(this, 'AppRegistryApp', {
-            applicationName: applicationName,
-            description: `Service Catalog application to track and manage all your resources. The SolutionId is ${solutionId} and SolutionVersion is ${solutionVersion}.`
-        });
-        appRegistry.associateApplicationWithStack(this);
-        cdk.Tags.of(appRegistry).add('Solutions:SolutionID', solutionId);
-        cdk.Tags.of(appRegistry).add('Solutions:SolutionName', solutionName);
-        cdk.Tags.of(appRegistry).add('Solutions:SolutionVersion', solutionVersion);
-        cdk.Tags.of(appRegistry).add('Solutions:ApplicationType', 'AWS-Solutions');
-
-        attributeGroup.associateWith(appRegistry);
-
-        /**
          * Stack Outputs
         */
         new cdk.CfnOutput(this, 'SourceBucket', { // NOSONAR
