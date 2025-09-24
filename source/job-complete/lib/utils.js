@@ -228,7 +228,6 @@ const sendMetrics = async (solutionId,version,uuid,results) => {
             },
             data: metrics
         };
-        console.log(`Sending Metrics: ${JSON.stringify(metrics,null,2)}`);
         await axios(params);
     } catch (err) {
         console.log(err);
